@@ -80,40 +80,40 @@ export const App: React.FC = () => {
       </div>
 
       {/* Premium Header */}
-      <header className="relative z-20 border-b border-purple-500/20 bg-slate-950/80 backdrop-blur-xl sticky top-0 shadow-2xl shadow-purple-950/50">
+      <header className="relative z-20 border-b border-amber-500/30 bg-slate-950/85 backdrop-blur-2xl sticky top-0 shadow-2xl shadow-purple-950/80">
         <div className="max-w-6xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-purple-600 to-pink-500 p-[1.5px] shadow-lg shadow-purple-900/40">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-600 to-purple-600 p-[1.5px] shadow-lg shadow-amber-500/20">
               <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+                <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
               </div>
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold gold-gradient-text m-0 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold gold-gradient-text m-0 tracking-tight font-cinzel-decorative">
                 ยิปซีพยากรณ์
               </h1>
-              <p className="text-[11px] text-purple-300/80 m-0 font-medium">Gypsy Tarot Oracle • ดูดวงไพ่ยิปซีออนไลน์แม่นยำ</p>
+              <p className="text-[11px] text-amber-200/70 m-0 font-medium">GYPSY TAROT ORACLE • ดูดวงไพ่ยิปซีออนไลน์พรีเมียม</p>
             </div>
           </div>
 
           {/* Navigation Tab */}
-          <nav className="flex items-center bg-slate-900/90 p-1 rounded-2xl border border-purple-500/20 shadow-inner">
+          <nav className="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-amber-500/30 shadow-inner">
             <button
               onClick={() => setActiveTab('reading')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
                 activeTab === 'reading'
-                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-900/50 scale-[1.02]'
+                  ? 'bg-gradient-to-r from-amber-600 via-amber-500 to-purple-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
-              <Compass className="w-4 h-4 text-amber-400" />
+              <Compass className="w-4 h-4 text-amber-950" />
               เปิดดวงทำนาย
             </button>
             <button
               onClick={() => setActiveTab('encyclopedia')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
                 activeTab === 'encyclopedia'
-                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-900/50 scale-[1.02]'
+                  ? 'bg-gradient-to-r from-amber-600 via-amber-500 to-purple-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
@@ -129,22 +129,22 @@ export const App: React.FC = () => {
         {activeTab === 'reading' ? (
           <div className="space-y-8">
             {/* Hero / Banner */}
-            <div className="text-center space-y-2 py-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-950/80 border border-purple-500/30 text-purple-300 shadow-sm">
-                <Flame className="w-3.5 h-3.5 text-amber-400" /> ศาสตร์แห่งไพ่ยิปซีโบราณ Major Arcana
+            <div className="text-center space-y-3 py-2">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900/90 border border-amber-500/40 text-amber-300 shadow-md">
+                <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> ศาสตร์แห่งไพ่ยิปซีโบราณ Major Arcana 22 ใบ
               </span>
-              <h2 className="text-2xl sm:text-4xl font-extrabold mystic-gradient-text">
+              <h2 className="text-3xl sm:text-5xl font-black mystic-gradient-text tracking-wide">
                 ตั้งจิตอธิษฐานแล้วเปิดไพ่ไขโชคชะตา
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-                เลือกช่วงเวลาที่ต้องการทำนาย น้อมรับคำเตือน สติ และพลังงานบวกเพื่อนำทางชีวิต
+              <p className="text-xs sm:text-sm text-slate-300/80 max-w-xl mx-auto leading-relaxed">
+                เลือกช่วงเวลาที่ต้องการทำนาย น้อมรับคำเตือน สติ และพลังงานบวกเพื่อนำทางชีวิตสู่ความมั่งคั่งผาสุก
               </p>
             </div>
 
             {/* Step 1: Timeframe */}
             <section className="glass-panel rounded-3xl p-6 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl"></div>
-              <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider mb-4 flex items-center gap-2 font-cinzel">
                 <Calendar className="w-4 h-4 text-amber-400" />
                 ขั้นตอนที่ 1: เลือกช่วงเวลาทำนายดวง
               </h3>
@@ -162,13 +162,13 @@ export const App: React.FC = () => {
                     }}
                     className={`group text-left p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${
                       readingType === type.id
-                        ? 'bg-gradient-to-br from-purple-900/60 via-slate-900 to-indigo-950/80 border-amber-400/80 shadow-xl shadow-purple-950/80 ring-1 ring-amber-400/50'
-                        : 'bg-slate-950/50 border-purple-900/30 hover:border-purple-600/50 hover:bg-slate-900/60'
+                        ? 'bg-gradient-to-br from-amber-950/40 via-slate-900 to-purple-950/60 border-amber-400 shadow-xl shadow-amber-500/20 ring-1 ring-amber-400/50'
+                        : 'bg-slate-950/50 border-purple-900/30 hover:border-amber-500/40 hover:bg-slate-900/60'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className="font-bold text-base text-slate-100 group-hover:text-amber-300 transition-colors">{type.title}</span>
-                      <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-md bg-purple-950 border border-purple-800/60 text-purple-300">
+                      <span className="text-[10px] font-bold font-mono px-2.5 py-0.5 rounded-md bg-amber-950/80 border border-amber-500/40 text-amber-300">
                         {type.count}
                       </span>
                     </div>
@@ -180,7 +180,7 @@ export const App: React.FC = () => {
 
             {/* Step 2: Category Filter */}
             <section className="glass-panel rounded-3xl p-6 shadow-2xl">
-              <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider mb-4 flex items-center gap-2 font-cinzel">
                 <Zap className="w-4 h-4 text-amber-400" />
                 ขั้นตอนที่ 2: เลือกด้านที่ต้องการเจาะลึก
               </h3>
@@ -191,11 +191,11 @@ export const App: React.FC = () => {
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border text-center transition-all duration-300 cursor-pointer ${
                       selectedCategory === cat.id
-                        ? 'bg-gradient-to-b from-purple-900/80 to-slate-900 border-amber-400 shadow-lg shadow-purple-950/60 scale-[1.03]'
-                        : 'bg-slate-950/40 border-purple-900/30 text-slate-300 hover:bg-slate-900/60 hover:border-purple-700/50'
+                        ? 'bg-gradient-to-b from-amber-950/60 to-purple-950/80 border-amber-400 shadow-lg shadow-amber-500/20 scale-[1.03]'
+                        : 'bg-slate-950/40 border-purple-900/30 text-slate-300 hover:bg-slate-900/60 hover:border-amber-500/40'
                     }`}
                   >
-                    <div className="p-2.5 rounded-xl bg-slate-900/90 mb-2 border border-purple-900/50 shadow-inner">
+                    <div className="p-2.5 rounded-xl bg-slate-900/90 mb-2 border border-amber-500/30 shadow-inner">
                       {cat.icon}
                     </div>
                     <span className="text-xs font-bold text-slate-200">{cat.label}</span>
@@ -209,21 +209,21 @@ export const App: React.FC = () => {
               <button
                 onClick={handleDrawCards}
                 disabled={isShuffling}
-                className="group relative inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-purple-600 to-pink-600 text-white font-extrabold text-lg shadow-2xl shadow-purple-950 hover:shadow-purple-900/80 hover:scale-[1.03] active:scale-95 transition-all duration-300 disabled:opacity-50 cursor-pointer border border-amber-300/30"
+                className="group relative inline-flex items-center gap-3 px-10 py-4.5 rounded-2xl btn-gold-shimmer text-slate-950 font-black text-lg tracking-wide shadow-2xl hover:scale-[1.03] active:scale-95 transition-all duration-300 disabled:opacity-50 cursor-pointer border border-amber-200/50"
               >
                 {isShuffling ? (
                   <>
-                    <RotateCcw className="w-6 h-6 animate-spin text-amber-300" />
+                    <RotateCcw className="w-6 h-6 animate-spin text-slate-950" />
                     กำลังสับไพ่และตั้งจิตอธิษฐาน...
                   </>
                 ) : (
                   <>
-                    <Shuffle className="w-6 h-6 group-hover:rotate-180 transition-transform duration-700 text-amber-300" />
+                    <Shuffle className="w-6 h-6 group-hover:rotate-180 transition-transform duration-700 text-slate-950" />
                     {drawnCards.length > 0 ? 'เปิดไพ่ทำนายใหม่อีกครั้ง' : `เริ่มทำนายดวง (${cardsToDrawCount} ใบ)`}
                   </>
                 )}
               </button>
-              <p className="text-xs text-purple-300/70 font-medium">✨ นึกถึงชื่อ-นามสกุล และเรื่องที่ต้องการคำตอบ แล้วกดปุ่มเพื่อเปิดไพ่</p>
+              <p className="text-xs text-amber-200/70 font-medium">✨ นึกถึงชื่อ-นามสกุล และเรื่องที่ต้องการคำตอบ แล้วกดปุ่มเพื่อเปิดไพ่</p>
             </div>
 
             {/* Results Display */}
@@ -242,25 +242,24 @@ export const App: React.FC = () => {
                   {drawnCards.map((card: TarotCard, idx: number) => (
                     <div
                       key={card.id}
-                      className="glass-card rounded-3xl overflow-hidden shadow-2xl flex flex-col border border-purple-500/30 hover:border-amber-400/60 transition-all duration-500 group hover:-translate-y-1.5"
+                      className="glass-card rounded-3xl overflow-hidden shadow-2xl flex flex-col border border-amber-500/30 hover:border-amber-400/80 transition-all duration-500 group hover:-translate-y-2"
                     >
                       {/* Position Tag Header */}
-                      <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-purple-950 px-4 py-2.5 border-b border-purple-900/60 text-center text-xs font-bold text-amber-300 tracking-wide">
+                      <div className="bg-gradient-to-r from-amber-950/80 via-purple-950 to-amber-950/80 px-4 py-2.5 border-b border-amber-500/30 text-center text-xs font-bold text-amber-300 tracking-wider font-cinzel">
                         {getPositionLabel(idx, readingType)}
                       </div>
 
                       {/* Card Graphic Frame */}
-                      <div className="p-6 flex flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950 border-b border-purple-900/40 relative">
-                        <div className="absolute top-2 right-3 text-[10px] font-mono font-bold text-purple-300/60">
+                      <div className="p-6 flex flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-purple-950/20 to-slate-950 border-b border-purple-900/40 relative">
+                        <div className="absolute top-2 right-3 text-[10px] font-mono font-bold text-amber-400/70">
                           #{card.id < 10 ? `0${card.id}` : card.id}
                         </div>
 
                         {/* Tarot Card Object */}
                         <div
-                          className="w-32 h-52 rounded-2xl p-1 border-2 shadow-2xl relative overflow-hidden group-hover:scale-105 transition-transform duration-500 bg-slate-950 flex flex-col"
+                          className="w-36 h-56 rounded-2xl p-1.5 border-2 shadow-2xl relative overflow-hidden group-hover:scale-105 transition-transform duration-500 bg-slate-950 flex flex-col animate-cosmicGlow"
                           style={{
                             borderColor: card.color,
-                            boxShadow: `0 10px 30px -10px ${card.color}60`
                           }}
                         >
                           <img
@@ -270,12 +269,12 @@ export const App: React.FC = () => {
                           />
                         </div>
 
-                        <h4 className="text-lg font-bold text-amber-200 mt-4 mb-0.5 text-center">{card.nameTh}</h4>
-                        <p className="text-xs text-purple-300/80 mb-3 font-medium">{card.nameEn} (ธาตุ{card.element})</p>
+                        <h4 className="text-xl font-bold text-amber-200 mt-4 mb-0.5 text-center font-cinzel">{card.nameTh}</h4>
+                        <p className="text-xs text-amber-300/80 mb-3 font-medium tracking-wide">{card.nameEn} • ธาตุ{card.element}</p>
 
                         <div className="flex flex-wrap gap-1 justify-center">
                           {card.keywords.map((kw: string, kIdx: number) => (
-                            <span key={kIdx} className="text-[10px] bg-purple-950/80 text-purple-200 px-2 py-0.5 rounded-full border border-purple-800/50 font-medium">
+                            <span key={kIdx} className="text-[10px] bg-slate-900/90 text-amber-200 px-2.5 py-0.5 rounded-full border border-amber-500/30 font-medium">
                               #{kw}
                             </span>
                           ))}
