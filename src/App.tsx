@@ -257,20 +257,17 @@ export const App: React.FC = () => {
 
                         {/* Tarot Card Object */}
                         <div
-                          className="w-28 h-44 rounded-2xl flex flex-col items-center justify-between p-3.5 border-2 shadow-2xl relative overflow-hidden group-hover:scale-105 transition-transform duration-500"
+                          className="w-32 h-52 rounded-2xl p-1 border-2 shadow-2xl relative overflow-hidden group-hover:scale-105 transition-transform duration-500 bg-slate-950 flex flex-col"
                           style={{
                             borderColor: card.color,
-                            backgroundColor: '#0b0f19',
                             boxShadow: `0 10px 30px -10px ${card.color}60`
                           }}
                         >
-                          <div className="text-xs font-extrabold font-mono self-start" style={{ color: card.color }}>
-                            {card.romanNumeral}
-                          </div>
-                          <div className="text-6xl my-auto animate-float">{card.image}</div>
-                          <div className="text-[10px] font-bold text-slate-300 text-center line-clamp-1 tracking-wider uppercase">
-                            {card.nameEn}
-                          </div>
+                          <img
+                            src={card.imageUrl}
+                            alt={card.nameTh}
+                            className="w-full h-full object-cover rounded-xl shadow-inner"
+                          />
                         </div>
 
                         <h4 className="text-lg font-bold text-amber-200 mt-4 mb-0.5 text-center">{card.nameTh}</h4>
@@ -356,12 +353,14 @@ export const App: React.FC = () => {
                   className="glass-panel hover:border-amber-400/80 rounded-2xl p-4 flex flex-col items-center transition-all duration-300 cursor-pointer hover:scale-105 group"
                 >
                   <div
-                    className="w-16 h-24 rounded-xl flex flex-col items-center justify-between p-2 border shadow-lg mb-3 bg-slate-950 group-hover:border-amber-400 transition-colors"
+                    className="w-20 h-32 rounded-xl p-1 border shadow-lg mb-3 bg-slate-950 group-hover:border-amber-400 transition-colors overflow-hidden"
                     style={{ borderColor: card.color }}
                   >
-                    <span className="text-[10px] font-mono font-bold text-slate-400">{card.romanNumeral}</span>
-                    <span className="text-3xl animate-float">{card.image}</span>
-                    <span className="text-[8px] font-bold text-slate-400 line-clamp-1">{card.nameEn}</span>
+                    <img
+                      src={card.imageUrl}
+                      alt={card.nameTh}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
                   </div>
                   <span className="text-xs font-bold text-slate-200 group-hover:text-amber-300 text-center line-clamp-1">{card.nameTh}</span>
                 </button>
@@ -381,20 +380,17 @@ export const App: React.FC = () => {
 
                   <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                     <div
-                      className="w-36 h-56 rounded-2xl flex flex-col items-center justify-between p-4 border-2 shadow-2xl shrink-0"
+                      className="w-40 h-64 rounded-2xl p-1.5 border-2 shadow-2xl shrink-0 overflow-hidden bg-slate-950"
                       style={{
                         borderColor: selectedEncyclopediaCard.color,
-                        backgroundColor: '#0b0f19',
                         boxShadow: `0 10px 35px -10px ${selectedEncyclopediaCard.color}80`
                       }}
                     >
-                      <span className="text-sm font-extrabold font-mono" style={{ color: selectedEncyclopediaCard.color }}>
-                        {selectedEncyclopediaCard.romanNumeral}
-                      </span>
-                      <span className="text-6xl">{selectedEncyclopediaCard.image}</span>
-                      <span className="text-xs font-bold text-slate-300 text-center tracking-wider uppercase">
-                        {selectedEncyclopediaCard.nameEn}
-                      </span>
+                      <img
+                        src={selectedEncyclopediaCard.imageUrl}
+                        alt={selectedEncyclopediaCard.nameTh}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
                     </div>
 
                     <div className="space-y-3 text-center sm:text-left">
