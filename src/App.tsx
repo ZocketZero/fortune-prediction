@@ -1,7 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TAROT_CARDS } from './data/tarotCards';
 import type { TarotCard, CardInterpretation } from './data/tarotCards';
-import { Sparkles, Calendar, Heart, Briefcase, Coins, Activity, HelpCircle, Shuffle, RotateCcw, Compass, BookOpen, Eye, Zap, Shield, Flame } from 'lucide-react';
+import {
+  Sparkles,
+  Calendar,
+  Heart,
+  Briefcase,
+  Coins,
+  Activity,
+  HelpCircle,
+  Shuffle,
+  RotateCcw,
+  Compass,
+  BookOpen,
+  Eye,
+  Zap,
+  Shield,
+  Flame,
+  CheckCircle2,
+  Dices,
+  Layers
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 type ReadingType = 'daily' | 'monthly' | 'yearly';
@@ -26,45 +45,111 @@ const CATEGORIES: CategoryOption[] = [
 export const App: React.FC = () => {
   const [readingType, setReadingType] = useState<ReadingType>('daily');
   const [selectedCategory, setSelectedCategory] = useState<keyof CardInterpretation | 'all'>('all');
-  const [drawnCards, setDrawnCards] = useState<TarotCard[]>([]);
-  const [isShuffling, setIsShuffling] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'reading' | 'encyclopedia'>('reading');
   const [selectedEncyclopediaCard, setSelectedEncyclopediaCard] = useState<TarotCard | null>(null);
 
+  // Deck State
+  const [deck, setDeck] = useState<TarotCard[]>([]);
+  const [selectedCardIds, setSelectedCardIds] = useState<number[]>([]);
+  const [isRevealed, setIsRevealed] = useState<boolean>(false);
+  const [isShuffling, setIsShuffling] = useState<boolean>(false);
+
   const cardsToDrawCount = readingType === 'daily' ? 1 : readingType === 'monthly' ? 3 : 4;
+
+  // Initialize and shuffle deck
+  const shuffleDeck = () => {
+    setIsShuffling(true);
+    setTimeout(() => {
+      const shuffled = [...TAROT_CARDS].sort(() => 0.5 - Math.random());
+      setDeck(shuffled);
+      setIsShuffling(false);
+    }, 600);
+  };
+
+  useEffect(() => {
+    shuffleDeck();
+  }, []);
 
   const triggerConfetti = () => {
     confetti({
-      particleCount: 80,
-      spread: 70,
+      particleCount: 90,
+      spread: 75,
       origin: { y: 0.6 },
-      colors: ['#f59e0b', '#c084fc', '#f472b6', '#38bdf8']
+      colors: ['#f59e0b', '#c084fc', '#f472b6', '#38bdf8', '#fbbf24']
     });
   };
 
-  const handleDrawCards = () => {
-    if (isShuffling) return;
-    setIsShuffling(true);
-    setDrawnCards([]);
-
-    setTimeout(() => {
-      const shuffled = [...TAROT_CARDS].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, cardsToDrawCount);
-      setDrawnCards(selected);
-      setIsShuffling(false);
-      triggerConfetti();
-    }, 1300);
+  // Switch timeframe handler
+  const handleSelectReadingType = (type: ReadingType) => {
+    setReadingType(type);
+    setSelectedCardIds([]);
+    setIsRevealed(false);
   };
+
+  // Card picking handler
+  const handleToggleCardPick = (cardId: number) => {
+    if (isRevealed || isShuffling) return;
+
+    if (selectedCardIds.includes(cardId)) {
+      // Deselect card
+      setSelectedCardIds(selectedCardIds.filter((id) => id !== cardId));
+    } else {
+      // Pick card if quota not full
+      if (selectedCardIds.length < cardsToDrawCount) {
+        setSelectedCardIds([...selectedCardIds, cardId]);
+      }
+    }
+  };
+
+  // Auto-pick remaining cards
+  const handleAutoPick = () => {
+    if (isRevealed || isShuffling) return;
+    const remainingSlots = cardsToDrawCount - selectedCardIds.length;
+    if (remainingSlots <= 0) return;
+
+    const unselected = deck.filter((card) => !selectedCardIds.includes(card.id));
+    const randomPicks = [...unselected].sort(() => 0.5 - Math.random()).slice(0, remainingSlots);
+    const newSelected = [...selectedCardIds, ...randomPicks.map((c) => c.id)];
+    setSelectedCardIds(newSelected);
+  };
+
+  // Reset current selection
+  const handleResetSelection = () => {
+    setSelectedCardIds([]);
+    setIsRevealed(false);
+  };
+
+  // Reveal cards
+  const handleRevealCards = () => {
+    if (selectedCardIds.length !== cardsToDrawCount || isShuffling) return;
+    setIsRevealed(true);
+    triggerConfetti();
+
+    // Scroll smoothly to results after brief delay
+    setTimeout(() => {
+      const el = document.getElementById('results-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 200);
+  };
+
+  // Resolved drawn cards in selected order
+  const drawnCards = useMemo(() => {
+    return selectedCardIds
+      .map((id) => TAROT_CARDS.find((c) => c.id === id))
+      .filter((c): c is TarotCard => c !== undefined);
+  }, [selectedCardIds]);
 
   const getPositionLabel = (index: number, type: ReadingType) => {
     if (type === 'daily') return '✨ ไพ่ประจำวันของคุณ';
     if (type === 'monthly') {
       const labels = ['📜 ใบที่ 1: อดีต & รากฐาน', '🔮 ใบที่ 2: ปัจจุบัน & สถานการณ์หลัก', '🚀 ใบที่ 3: อนาคต & แนวโน้ม'];
-      return labels[index];
+      return labels[index] || `ไพ่ใบที่ ${index + 1}`;
     }
     if (type === 'yearly') {
       const labels = ['🌱 ไตรมาส 1 (ม.ค. - มี.ค.)', '☀️ ไตรมาส 2 (เม.ย. - มิ.ย.)', '🍂 ไตรมาส 3 (ก.ค. - ก.ย.)', '❄️ ไตรมาส 4 (ต.ค. - ธ.ค.)'];
-      return labels[index];
+      return labels[index] || `ไตรมาส ${index + 1}`;
     }
     return `ไพ่ใบที่ ${index + 1}`;
   };
@@ -134,14 +219,14 @@ export const App: React.FC = () => {
                 <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> ศาสตร์แห่งไพ่ยิปซีโบราณ Major Arcana 22 ใบ
               </span>
               <h2 className="text-3xl sm:text-5xl font-black mystic-gradient-text tracking-wide">
-                ตั้งจิตอธิษฐานแล้วเปิดไพ่ไขโชคชะตา
+                ตั้งจิตอธิษฐานแล้วเลือกไพ่ด้วยตัวคุณเอง
               </h2>
               <p className="text-xs sm:text-sm text-slate-300/80 max-w-xl mx-auto leading-relaxed">
-                เลือกช่วงเวลาที่ต้องการทำนาย น้อมรับคำเตือน สติ และพลังงานบวกเพื่อนำทางชีวิตสู่ความมั่งคั่งผาสุก
+                ทำจิตใจให้สงบ นึกถึงเรื่องที่ต้องการคำตอบ แล้วคลิกเลือกไพ่ที่ดึงดูดสายตาคุณมากที่สุดจากสำรับ 22 ใบด้านล่าง
               </p>
             </div>
 
-            {/* Step 1: Timeframe */}
+            {/* Step 1: Timeframe Selection */}
             <section className="glass-panel rounded-3xl p-6 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
               <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider mb-4 flex items-center gap-2 font-cinzel">
@@ -150,16 +235,13 @@ export const App: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { id: 'daily', title: 'ดวงรายวัน (1 ใบ)', desc: 'เปิดไพ่ 1 ใบ ดูพลังงานประจำวันและคำแนะนำกระทันหัน', count: '1 Card' },
-                  { id: 'monthly', title: 'ดวงรายเดือน (3 ใบ)', desc: 'สะท้อนรากฐานอดีต สถานะปัจจุบัน และแนวโน้มอนาคตในเดือนนี้', count: '3 Cards' },
-                  { id: 'yearly', title: 'ดวงรายปี (4 ใบ)', desc: 'ทำนายภาพรวมชีวิต 4 ไตรมาส ตลอดทั้งปี 12 เดือน', count: '4 Cards' },
+                  { id: 'daily', title: 'ดวงรายวัน (1 ใบ)', desc: 'เลือกไพ่ 1 ใบ ดูพลังงานประจำวันและคำแนะนำกระทันหัน', count: '1 Card' },
+                  { id: 'monthly', title: 'ดวงรายเดือน (3 ใบ)', desc: 'เลือกไพ่ 3 ใบ สะท้อนรากฐานอดีต ปัจจุบัน และแนวโน้มอนาคต', count: '3 Cards' },
+                  { id: 'yearly', title: 'ดวงรายปี (4 ใบ)', desc: 'เลือกไพ่ 4 ใบ ทำนายภาพรวมชีวิต 4 ไตรมาส ตลอดทั้งปี', count: '4 Cards' },
                 ].map((type) => (
                   <button
                     key={type.id}
-                    onClick={() => {
-                      setReadingType(type.id as ReadingType);
-                      setDrawnCards([]);
-                    }}
+                    onClick={() => handleSelectReadingType(type.id as ReadingType)}
                     className={`group text-left p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${
                       readingType === type.id
                         ? 'bg-gradient-to-br from-amber-950/40 via-slate-900 to-purple-950/60 border-amber-400 shadow-xl shadow-amber-500/20 ring-1 ring-amber-400/50'
@@ -204,31 +286,212 @@ export const App: React.FC = () => {
               </div>
             </section>
 
-            {/* Draw Action Button */}
-            <div className="text-center py-4 space-y-3">
-              <button
-                onClick={handleDrawCards}
-                disabled={isShuffling}
-                className="group relative inline-flex items-center gap-3 px-10 py-4.5 rounded-2xl btn-gold-shimmer text-slate-950 font-black text-lg tracking-wide shadow-2xl hover:scale-[1.03] active:scale-95 transition-all duration-300 disabled:opacity-50 cursor-pointer border border-amber-200/50"
+            {/* Step 3: Interactive Card Tray & Chosen Slots */}
+            <section className="glass-panel rounded-3xl p-6 shadow-2xl space-y-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-2 border-b border-purple-900/40">
+                <div>
+                  <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2 font-cinzel">
+                    <Layers className="w-4 h-4 text-amber-400" />
+                    ตำแหน่งไพ่ที่เลือก ({selectedCardIds.length}/{cardsToDrawCount} ใบ)
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {selectedCardIds.length === cardsToDrawCount
+                      ? '✨ เลือกครบตามจำนวนแล้ว กดปุ่ม "เปิดคำทำนายดวงชะตา" ด้านล่างเพื่อดูผลคำพยากรณ์'
+                      : `🔮 กรุณาคลิกเลือกไพ่จากสำรับ 22 ใบด้านล่างอีก ${cardsToDrawCount - selectedCardIds.length} ใบ`}
+                  </p>
+                </div>
+
+                {/* Deck Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={shuffleDeck}
+                    disabled={isShuffling}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-purple-700/60 hover:border-amber-400/60 text-xs font-bold text-amber-200 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <Shuffle className={`w-3.5 h-3.5 ${isShuffling ? 'animate-spin' : ''}`} />
+                    สับไพ่ใหม่
+                  </button>
+                  {selectedCardIds.length < cardsToDrawCount && (
+                    <button
+                      onClick={handleAutoPick}
+                      disabled={isShuffling}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-950/80 hover:bg-purple-900 border border-purple-500/50 hover:border-purple-400 text-xs font-bold text-purple-200 transition-all cursor-pointer"
+                    >
+                      <Dices className="w-3.5 h-3.5 text-purple-300" />
+                      สุ่มเลือกให้อัตโนมัติ
+                    </button>
+                  )}
+                  {selectedCardIds.length > 0 && (
+                    <button
+                      onClick={handleResetSelection}
+                      disabled={isShuffling}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 border border-red-900/50 hover:border-red-500/60 text-xs font-bold text-red-300 transition-all cursor-pointer"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      เริ่มเลือกใหม่
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Chosen Slots Representation */}
+              <div className={`grid gap-4 ${cardsToDrawCount === 1 ? 'max-w-xs mx-auto' : cardsToDrawCount === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-4'}`}>
+                {Array.from({ length: cardsToDrawCount }).map((_, idx) => {
+                  const cardId = selectedCardIds[idx];
+                  const card = cardId !== undefined ? TAROT_CARDS.find((c) => c.id === cardId) : null;
+
+                  return (
+                    <div
+                      key={idx}
+                      className={`relative rounded-2xl p-4 flex flex-col items-center justify-center min-h-[190px] text-center transition-all duration-300 border ${
+                        card
+                          ? 'bg-gradient-to-b from-purple-950/60 to-slate-950 border-amber-400/70 shadow-lg shadow-amber-500/10'
+                          : 'bg-slate-950/40 border-dashed border-purple-800/40'
+                      }`}
+                    >
+                      <span className="text-[11px] font-bold text-amber-300/90 mb-3 px-2.5 py-0.5 rounded-full bg-slate-900/90 border border-amber-500/30">
+                        {getPositionLabel(idx, readingType)}
+                      </span>
+
+                      {card ? (
+                        <div className="flex flex-col items-center space-y-2 animate-fadeIn">
+                          {isRevealed ? (
+                            <div
+                              className="w-20 h-32 rounded-xl p-1 border-2 shadow-xl bg-slate-950 overflow-hidden"
+                              style={{ borderColor: card.color }}
+                            >
+                              <img src={card.imageUrl} alt={card.nameTh} className="w-full h-full object-cover rounded-lg" />
+                            </div>
+                          ) : (
+                            <div className="w-20 h-32 rounded-xl tarot-card-back flex flex-col items-center justify-center p-2 shadow-xl">
+                              <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+                              <span className="text-[10px] font-mono text-amber-300/80 font-bold mt-1">ใบที่ {idx + 1}</span>
+                            </div>
+                          )}
+
+                          <div className="text-center">
+                            <span className="text-xs font-bold text-amber-200 block line-clamp-1">
+                              {isRevealed ? card.nameTh : `เลือกไพ่ใบที่ ${idx + 1} แล้ว`}
+                            </span>
+                            {!isRevealed && (
+                              <button
+                                onClick={() => handleToggleCardPick(card.id)}
+                                className="text-[10px] text-red-400 hover:text-red-300 underline cursor-pointer mt-1"
+                              >
+                                เปลี่ยนใบนี้
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center space-y-2 py-4 text-slate-500">
+                          <div className="w-16 h-24 rounded-xl border border-dashed border-purple-700/40 flex items-center justify-center bg-slate-900/30">
+                            <Sparkles className="w-4 h-4 text-purple-400/40" />
+                          </div>
+                          <span className="text-[11px] font-medium text-slate-400">คลิกเลือกไพ่ด้านล่าง</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Reveal Action Button */}
+              {selectedCardIds.length === cardsToDrawCount && !isRevealed && (
+                <div className="text-center pt-2">
+                  <button
+                    onClick={handleRevealCards}
+                    className="group relative inline-flex items-center gap-3 px-10 py-4.5 rounded-2xl btn-gold-shimmer text-slate-950 font-black text-lg tracking-wide shadow-2xl hover:scale-[1.03] active:scale-95 transition-all duration-300 cursor-pointer border border-amber-200/50"
+                  >
+                    <Eye className="w-6 h-6 text-slate-950 animate-bounce" />
+                    เปิดคำทำนายดวงชะตา ({cardsToDrawCount} ใบ)
+                  </button>
+                </div>
+              )}
+            </section>
+
+            {/* Step 4: The 22 Tarot Cards Spread (Deck) */}
+            <section className="glass-panel rounded-3xl p-6 shadow-2xl space-y-5">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2 font-cinzel">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    สำรับไพ่ยิปซี Major Arcana 22 ใบ (คลิกที่ไพ่เพื่อเลือก)
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    เลือกไพ่ที่ท่านรู้สึกมีพลังงานเชื่อมโยงที่สุด
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs px-3 py-1 rounded-full bg-slate-900/90 border border-amber-500/40 text-amber-300 font-bold">
+                    เลือกแล้ว {selectedCardIds.length} จาก {cardsToDrawCount} ใบ
+                  </span>
+                </div>
+              </div>
+
+              {/* 22 Cards Grid Layout */}
+              <div
+                className={`grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-11 gap-3 p-3 rounded-2xl bg-slate-950/60 border border-purple-900/40 ${
+                  isShuffling ? 'card-shuffling' : ''
+                }`}
               >
-                {isShuffling ? (
-                  <>
-                    <RotateCcw className="w-6 h-6 animate-spin text-slate-950" />
-                    กำลังสับไพ่และตั้งจิตอธิษฐาน...
-                  </>
-                ) : (
-                  <>
-                    <Shuffle className="w-6 h-6 group-hover:rotate-180 transition-transform duration-700 text-slate-950" />
-                    {drawnCards.length > 0 ? 'เปิดไพ่ทำนายใหม่อีกครั้ง' : `เริ่มทำนายดวง (${cardsToDrawCount} ใบ)`}
-                  </>
-                )}
-              </button>
-              <p className="text-xs text-amber-200/70 font-medium">✨ นึกถึงชื่อ-นามสกุล และเรื่องที่ต้องการคำตอบ แล้วกดปุ่มเพื่อเปิดไพ่</p>
-            </div>
+                {deck.map((card, index) => {
+                  const pickIndex = selectedCardIds.indexOf(card.id);
+                  const isSelected = pickIndex !== -1;
+                  const canSelectMore = selectedCardIds.length < cardsToDrawCount;
+
+                  return (
+                    <button
+                      key={card.id}
+                      onClick={() => handleToggleCardPick(card.id)}
+                      disabled={isRevealed || isShuffling || (!isSelected && !canSelectMore)}
+                      title={isSelected ? `คลิกเพื่อยกเลิกการเลือกไพ่ใบที่ ${pickIndex + 1}` : `คลิกเพื่อเลือกไพ่ใบนี้`}
+                      className={`group relative flex flex-col items-center justify-center rounded-xl p-1 transition-all duration-300 cursor-pointer ${
+                        isSelected
+                          ? '-translate-y-2 scale-105 ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-950 shadow-xl shadow-amber-500/30'
+                          : canSelectMore && !isRevealed
+                          ? 'hover:-translate-y-2 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20'
+                          : 'opacity-40 cursor-not-allowed'
+                      }`}
+                    >
+                      {/* Card Body */}
+                      <div className="w-full aspect-[2/3] rounded-xl tarot-card-back flex flex-col items-center justify-between p-2 relative overflow-hidden">
+                        {/* Decorative Corner Ornaments */}
+                        <div className="absolute top-1 left-1 text-[8px] text-amber-400/60 font-serif">✦</div>
+                        <div className="absolute top-1 right-1 text-[8px] text-amber-400/60 font-serif">✦</div>
+                        <div className="absolute bottom-1 left-1 text-[8px] text-amber-400/60 font-serif">✦</div>
+                        <div className="absolute bottom-1 right-1 text-[8px] text-amber-400/60 font-serif">✦</div>
+
+                        <span className="text-[9px] font-mono font-bold text-amber-300/60">
+                          {index + 1}
+                        </span>
+
+                        {/* Center Icon */}
+                        <div className="w-7 h-7 rounded-full bg-slate-900/90 border border-amber-500/40 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                        </div>
+
+                        <span className="text-[8px] font-serif text-amber-400/70 tracking-widest uppercase">TAROT</span>
+
+                        {/* Selection Badge Indicator */}
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-amber-950/70 backdrop-blur-[1px] flex flex-col items-center justify-center p-1 border-2 border-amber-400 rounded-xl z-10 animate-fadeIn">
+                            <CheckCircle2 className="w-5 h-5 text-amber-400 mb-0.5" />
+                            <span className="text-[10px] font-bold text-amber-200">
+                              ใบที่ {pickIndex + 1}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
 
             {/* Results Display */}
-            {drawnCards.length > 0 && (
-              <section className="space-y-8 pt-4">
+            {isRevealed && drawnCards.length > 0 && (
+              <section id="results-section" className="space-y-8 pt-6 animate-fadeIn">
                 <div className="text-center space-y-1">
                   <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-purple-950/80 border border-amber-400/40 text-amber-300 text-xs font-bold shadow-md">
                     <Eye className="w-3.5 h-3.5" /> ผลคำทำนายของคุณเรียบร้อยแล้ว
@@ -332,6 +595,17 @@ export const App: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* Reset or Pick New Button at bottom */}
+                <div className="text-center pt-4">
+                  <button
+                    onClick={handleResetSelection}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 hover:from-purple-800 hover:to-indigo-800 border border-purple-500/50 text-amber-200 font-bold text-sm shadow-xl cursor-pointer transition-all hover:scale-105"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    เลือกไพ่ใหม่ / ทำนายอีกครั้ง
+                  </button>
                 </div>
               </section>
             )}
