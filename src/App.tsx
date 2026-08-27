@@ -179,9 +179,9 @@ export const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-extrabold gold-gradient-text m-0 tracking-tight font-cinzel-decorative">
-                ยิปซีพยากรณ์
+                ทำนายโชคชะตา
               </h1>
-              <p className="text-[11px] text-amber-200/70 m-0 font-medium">GYPSY TAROT ORACLE • ดูดวงไพ่ยิปซีออนไลน์พรีเมียม</p>
+              <p className="text-[11px] text-amber-200/70 m-0 font-medium">FORTUNE PREDICTION • ดูดวงไพ่ยิปซีและเซียมซีออนไลน์</p>
             </div>
           </div>
 
@@ -741,7 +741,7 @@ export const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-purple-900/30 bg-slate-950/90 py-6 text-center text-xs text-purple-300/60 mt-auto">
-        <p>© 2026 Gypsy Tarot Oracle • ทำนายดวงชะตาส่วนบุคคลด้วยไพ่ยิปซีเพื่อนำทางชีวิตด้วยสติและปัญญา</p>
+        <p>© 2026 ทำนายโชคชะตา (Fortune Prediction) • ดูดวงไพ่ยิปซีและเซียมซีเพื่อนำทางชีวิตด้วยสติและปัญญา</p>
       </footer>
     </div>
   );
