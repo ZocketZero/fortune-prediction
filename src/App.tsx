@@ -20,8 +20,7 @@ import {
   Flame,
   CheckCircle2,
   Dices,
-  Layers,
-  Scroll
+  Layers
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -201,12 +200,12 @@ export const App: React.FC = () => {
               onClick={() => setActiveTab('siamsi')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
                 activeTab === 'siamsi'
-                  ? 'bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-slate-950 shadow-lg shadow-red-500/30 scale-[1.02]'
+                  ? 'bg-gradient-to-r from-orange-600 via-red-500 to-rose-600 text-white shadow-lg shadow-orange-500/30 scale-[1.02]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
-              <Scroll className="w-4 h-4 text-red-400" />
-              เสี่ยงเซียมซี ๒๘ ใบ
+              <span>⛩️</span>
+              เซียมซีญี่ปุ่น (おみくじ)
             </button>
             <button
               onClick={() => setActiveTab('encyclopedia')}
