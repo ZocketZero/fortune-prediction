@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { TAROT_CARDS } from './data/tarotCards';
 import type { TarotCard, CardInterpretation } from './data/tarotCards';
+import { SiamsiPage } from './components/SiamsiPage';
 import {
   Sparkles,
   Calendar,
@@ -19,11 +20,13 @@ import {
   Flame,
   CheckCircle2,
   Dices,
-  Layers
+  Layers,
+  Scroll
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 type ReadingType = 'daily' | 'monthly' | 'yearly';
+type AppTab = 'reading' | 'siamsi' | 'encyclopedia';
 
 interface CategoryOption {
   id: keyof CardInterpretation | 'all';
@@ -45,7 +48,7 @@ const CATEGORIES: CategoryOption[] = [
 export const App: React.FC = () => {
   const [readingType, setReadingType] = useState<ReadingType>('daily');
   const [selectedCategory, setSelectedCategory] = useState<keyof CardInterpretation | 'all'>('all');
-  const [activeTab, setActiveTab] = useState<'reading' | 'encyclopedia'>('reading');
+  const [activeTab, setActiveTab] = useState<AppTab>('reading');
   const [selectedEncyclopediaCard, setSelectedEncyclopediaCard] = useState<TarotCard | null>(null);
 
   // Deck State
@@ -182,28 +185,39 @@ export const App: React.FC = () => {
           </div>
 
           {/* Navigation Tab */}
-          <nav className="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-amber-500/30 shadow-inner">
+          <nav className="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-amber-500/30 shadow-inner gap-1">
             <button
               onClick={() => setActiveTab('reading')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
                 activeTab === 'reading'
                   ? 'bg-gradient-to-r from-amber-600 via-amber-500 to-purple-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
               <Compass className="w-4 h-4 text-amber-950" />
-              เปิดดวงทำนาย
+              ไพ่ยิปซี
+            </button>
+            <button
+              onClick={() => setActiveTab('siamsi')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+                activeTab === 'siamsi'
+                  ? 'bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-slate-950 shadow-lg shadow-red-500/30 scale-[1.02]'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+              }`}
+            >
+              <Scroll className="w-4 h-4 text-red-400" />
+              เสี่ยงเซียมซี ๒๘ ใบ
             </button>
             <button
               onClick={() => setActiveTab('encyclopedia')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
                 activeTab === 'encyclopedia'
                   ? 'bg-gradient-to-r from-amber-600 via-amber-500 to-purple-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
               <BookOpen className="w-4 h-4 text-purple-400" />
-              สารานุกรมไพ่ 22 ใบ
+              สารานุกรมไพ่
             </button>
           </nav>
         </div>
@@ -610,6 +624,8 @@ export const App: React.FC = () => {
               </section>
             )}
           </div>
+        ) : activeTab === 'siamsi' ? (
+          <SiamsiPage />
         ) : (
           /* Encyclopedia Tab */
           <div className="space-y-6">

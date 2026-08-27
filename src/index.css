@@ -153,4 +153,98 @@
   transform: rotateY(180deg);
 }
 
+/* Esiimsi Bamboo Cylinder Shake */
+@keyframes shakeCylinder {
+  0% { transform: rotate(0deg) translateY(0); }
+  15% { transform: rotate(-8deg) translateY(-8px); }
+  30% { transform: rotate(8deg) translateY(-14px); }
+  45% { transform: rotate(-10deg) translateY(-6px); }
+  60% { transform: rotate(10deg) translateY(-12px); }
+  75% { transform: rotate(-6deg) translateY(-4px); }
+  90% { transform: rotate(6deg) translateY(-8px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+.cylinder-shaking {
+  animation: shakeCylinder 0.35s ease-in-out infinite;
+}
+
+/* Stick Falling Animation */
+@keyframes stickFall {
+  0% {
+    transform: translateY(-80px) rotate(0deg) scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(15px) rotate(10deg) scale(1.05);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-5px) rotate(-4deg) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.stick-drop-anim {
+  animation: stickFall 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Incense Smoke Animation */
+@keyframes incenseSmoke {
+  0% {
+    transform: translateY(0) scaleX(1) scaleY(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-25px) scaleX(1.8) scaleY(1.4) skewX(8deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-50px) scaleX(2.5) scaleY(1.8) skewX(-12deg);
+    opacity: 0;
+  }
+}
+
+.animate-smoke {
+  animation: incenseSmoke 3s ease-out infinite;
+}
+
+/* Moon Blocks (Sheng Bei) Throw Animation */
+@keyframes throwBlock1 {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  50% { transform: translateY(-40px) rotate(180deg) scale(1.2); opacity: 1; }
+  100% { transform: translateY(0) rotate(360deg) scale(1); opacity: 1; }
+}
+
+@keyframes throwBlock2 {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  50% { transform: translateY(-50px) rotate(-220deg) scale(1.2); opacity: 1; }
+  100% { transform: translateY(0) rotate(-360deg) scale(1); opacity: 1; }
+}
+
+.anim-throw-1 {
+  animation: throwBlock1 0.7s ease-out forwards;
+}
+
+.anim-throw-2 {
+  animation: throwBlock2 0.75s ease-out forwards;
+}
+
+/* Traditional Red Gold Temple Button */
+.btn-chinese-red {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 40%, #ea580c 70%, #d97706 100%);
+  box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.5), inset 0 1px 0 rgba(254, 240, 138, 0.3);
+}
+
+/* Traditional Fortune Slip Paper Style */
+.siamsi-paper {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 40%, #fde68a 100%);
+  color: #451a03;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(217, 119, 6, 0.15);
+}
+
+
 
