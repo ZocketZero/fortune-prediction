@@ -3,6 +3,7 @@ import { TAROT_CARDS } from './data/tarotCards';
 import type { TarotCard, CardInterpretation } from './data/tarotCards';
 import { OmikujiPage } from './components/OmikujiPage';
 import { ThaiSiamsiPage } from './components/ThaiSiamsiPage';
+import { MainPage } from './components/MainPage';
 import {
   Sparkles,
   Calendar,
@@ -27,7 +28,7 @@ import {
 import confetti from 'canvas-confetti';
 
 type ReadingType = 'daily' | 'monthly' | 'yearly';
-type AppTab = 'reading' | 'omikuji' | 'thai_siamsi' | 'encyclopedia';
+type AppTab = 'home' | 'reading' | 'omikuji' | 'thai_siamsi' | 'encyclopedia';
 
 interface CategoryOption {
   id: keyof CardInterpretation | 'all';
@@ -49,7 +50,7 @@ const CATEGORIES: CategoryOption[] = [
 export const App: React.FC = () => {
   const [readingType, setReadingType] = useState<ReadingType>('daily');
   const [selectedCategory, setSelectedCategory] = useState<keyof CardInterpretation | 'all'>('all');
-  const [activeTab, setActiveTab] = useState<AppTab>('reading');
+  const [activeTab, setActiveTab] = useState<AppTab>('home');
   const [selectedEncyclopediaCard, setSelectedEncyclopediaCard] = useState<TarotCard | null>(null);
 
   // Deck State
@@ -188,6 +189,17 @@ export const App: React.FC = () => {
           {/* Navigation Tab */}
           <nav className="flex flex-wrap items-center bg-slate-900/90 p-1.5 rounded-2xl border border-amber-500/30 shadow-inner gap-1">
             <button
+              onClick={() => setActiveTab('home')}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+                activeTab === 'home'
+                  ? 'bg-gradient-to-r from-purple-700 via-violet-600 to-indigo-700 text-white shadow-lg shadow-purple-500/30 scale-[1.02]'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-purple-300" />
+              หน้าหลัก
+            </button>
+            <button
               onClick={() => setActiveTab('reading')}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
                 activeTab === 'reading'
@@ -237,7 +249,9 @@ export const App: React.FC = () => {
 
       {/* Main Content */}
       <main className="relative z-10 max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
-        {activeTab === 'reading' ? (
+        {activeTab === 'home' ? (
+          <MainPage onNavigate={(tab) => setActiveTab(tab)} />
+        ) : activeTab === 'reading' ? (
           <div className="space-y-8">
             {/* Hero / Banner */}
             <div className="text-center space-y-3 py-2">
