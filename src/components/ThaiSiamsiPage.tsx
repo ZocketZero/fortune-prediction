@@ -21,17 +21,41 @@ import {
   ChevronRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getStorageWithTTL, setStorageWithTTL, removeStorage } from '../utils/storage';
 
 type PoeiResult = 'shua' | 'im' | 'yang' | null;
 
+interface StoredThaiSiamsiResult {
+  shrineId: string;
+  userWish: string;
+  fallenStick: number;
+  fortuneNumber: number;
+  poeiResult: PoeiResult;
+}
+
+const THAI_SIAMSI_STORAGE_KEY = 'fortune_thai_siamsi_result';
+
 export const ThaiSiamsiPage: React.FC = () => {
-  const [selectedShrine, setSelectedShrine] = useState<ThaiShrineTheme>(THAI_SHRINES[0]);
-  const [userWish, setUserWish] = useState<string>('');
+  const initialSaved = getStorageWithTTL<StoredThaiSiamsiResult>(THAI_SIAMSI_STORAGE_KEY);
+
+  const [selectedShrine, setSelectedShrine] = useState<ThaiShrineTheme>(() => {
+    if (initialSaved?.shrineId) {
+      const found = THAI_SHRINES.find((s) => s.id === initialSaved.shrineId);
+      if (found) return found;
+    }
+    return THAI_SHRINES[0];
+  });
+  const [userWish, setUserWish] = useState<string>(() => initialSaved?.userWish || '');
   const [isShaking, setIsShaking] = useState<boolean>(false);
-  const [fallenStick, setFallenStick] = useState<number | null>(null);
-  const [poeiResult, setPoeiResult] = useState<PoeiResult>(null);
+  const [fallenStick, setFallenStick] = useState<number | null>(() => initialSaved?.fallenStick ?? null);
+  const [poeiResult, setPoeiResult] = useState<PoeiResult>(() => initialSaved?.poeiResult ?? null);
   const [isThrowingPoei, setIsThrowingPoei] = useState<boolean>(false);
-  const [confirmedFortune, setConfirmedFortune] = useState<ThaiSiamsiFortune | null>(null);
+  const [confirmedFortune, setConfirmedFortune] = useState<ThaiSiamsiFortune | null>(() => {
+    if (initialSaved?.fortuneNumber) {
+      return THAI_SIAMSI_FORTUNES.find((f) => f.number === initialSaved.fortuneNumber) || null;
+    }
+    return null;
+  });
   const [isBrowsingAll, setIsBrowsingAll] = useState<boolean>(false);
   const [selectedBrowseSlip, setSelectedBrowseSlip] = useState<ThaiSiamsiFortune | null>(null);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -125,6 +149,16 @@ export const ThaiSiamsiPage: React.FC = () => {
         const fortune = THAI_SIAMSI_FORTUNES.find((f) => f.number === fallenStick) || null;
         setConfirmedFortune(fortune);
         triggerConfetti();
+
+        if (fortune && fallenStick) {
+          setStorageWithTTL<StoredThaiSiamsiResult>(THAI_SIAMSI_STORAGE_KEY, {
+            shrineId: selectedShrine.id,
+            userWish,
+            fallenStick,
+            fortuneNumber: fortune.number,
+            poeiResult: 'shua',
+          });
+        }
       }
     }, 900);
   };
@@ -136,6 +170,16 @@ export const ThaiSiamsiPage: React.FC = () => {
     setPoeiResult('shua');
     setConfirmedFortune(fortune);
     triggerConfetti();
+
+    if (fortune) {
+      setStorageWithTTL<StoredThaiSiamsiResult>(THAI_SIAMSI_STORAGE_KEY, {
+        shrineId: selectedShrine.id,
+        userWish,
+        fallenStick,
+        fortuneNumber: fortune.number,
+        poeiResult: 'shua',
+      });
+    }
   };
 
   // Reset
@@ -143,6 +187,7 @@ export const ThaiSiamsiPage: React.FC = () => {
     setFallenStick(null);
     setPoeiResult(null);
     setConfirmedFortune(null);
+    removeStorage(THAI_SIAMSI_STORAGE_KEY);
   };
 
   // Copy fortune text

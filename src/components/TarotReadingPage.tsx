@@ -21,7 +21,17 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+import { getStorageWithTTL, setStorageWithTTL, removeStorage } from '../utils/storage';
+
 type ReadingType = 'daily' | 'monthly' | 'yearly';
+
+interface StoredTarotResult {
+  readingType: ReadingType;
+  selectedCardIds: number[];
+  selectedCategory: keyof CardInterpretation | 'all';
+}
+
+const TAROT_STORAGE_KEY = 'fortune_tarot_result';
 
 interface CategoryOption {
   id: keyof CardInterpretation | 'all';
@@ -41,13 +51,26 @@ const CATEGORIES: CategoryOption[] = [
 ];
 
 export const TarotReadingPage: React.FC = () => {
-  const [readingType, setReadingType] = useState<ReadingType>('daily');
-  const [selectedCategory, setSelectedCategory] = useState<keyof CardInterpretation | 'all'>('all');
+  // Initialize state from storage if available
+  const [readingType, setReadingType] = useState<ReadingType>(() => {
+    const saved = getStorageWithTTL<StoredTarotResult>(TAROT_STORAGE_KEY);
+    return saved?.readingType || 'daily';
+  });
+  const [selectedCategory, setSelectedCategory] = useState<keyof CardInterpretation | 'all'>(() => {
+    const saved = getStorageWithTTL<StoredTarotResult>(TAROT_STORAGE_KEY);
+    return saved?.selectedCategory || 'all';
+  });
 
   // Deck State
   const [deck, setDeck] = useState<TarotCard[]>([]);
-  const [selectedCardIds, setSelectedCardIds] = useState<number[]>([]);
-  const [isRevealed, setIsRevealed] = useState<boolean>(false);
+  const [selectedCardIds, setSelectedCardIds] = useState<number[]>(() => {
+    const saved = getStorageWithTTL<StoredTarotResult>(TAROT_STORAGE_KEY);
+    return saved?.selectedCardIds || [];
+  });
+  const [isRevealed, setIsRevealed] = useState<boolean>(() => {
+    const saved = getStorageWithTTL<StoredTarotResult>(TAROT_STORAGE_KEY);
+    return Boolean(saved && saved.selectedCardIds && saved.selectedCardIds.length > 0);
+  });
   const [isShuffling, setIsShuffling] = useState<boolean>(false);
 
   const cardsToDrawCount = readingType === 'daily' ? 1 : readingType === 'monthly' ? 3 : 4;
@@ -80,6 +103,7 @@ export const TarotReadingPage: React.FC = () => {
     setReadingType(type);
     setSelectedCardIds([]);
     setIsRevealed(false);
+    removeStorage(TAROT_STORAGE_KEY);
   };
 
   // Card picking handler
@@ -113,6 +137,7 @@ export const TarotReadingPage: React.FC = () => {
   const handleResetSelection = () => {
     setSelectedCardIds([]);
     setIsRevealed(false);
+    removeStorage(TAROT_STORAGE_KEY);
   };
 
   // Reveal cards
@@ -120,6 +145,13 @@ export const TarotReadingPage: React.FC = () => {
     if (selectedCardIds.length !== cardsToDrawCount || isShuffling) return;
     setIsRevealed(true);
     triggerConfetti();
+
+    // Persist result to localStorage with 1-day TTL
+    setStorageWithTTL<StoredTarotResult>(TAROT_STORAGE_KEY, {
+      readingType,
+      selectedCardIds,
+      selectedCategory,
+    });
 
     // Scroll smoothly to results after brief delay
     setTimeout(() => {

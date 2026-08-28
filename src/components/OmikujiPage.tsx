@@ -23,15 +23,39 @@ import {
   TreePine
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getStorageWithTTL, setStorageWithTTL, removeStorage } from '../utils/storage';
+
+interface StoredOmikujiResult {
+  shrineId: string;
+  userWish: string;
+  fallenStick: number;
+  fortuneNumber: number;
+  isTiedToShrine: boolean;
+}
+
+const OMIKUJI_STORAGE_KEY = 'fortune_omikuji_result';
 
 export const OmikujiPage: React.FC = () => {
-  const [selectedShrine, setSelectedShrine] = useState<JapaneseShrine>(JAPANESE_SHRINES[0]);
-  const [userWish, setUserWish] = useState<string>('');
+  const initialSaved = getStorageWithTTL<StoredOmikujiResult>(OMIKUJI_STORAGE_KEY);
+
+  const [selectedShrine, setSelectedShrine] = useState<JapaneseShrine>(() => {
+    if (initialSaved?.shrineId) {
+      const found = JAPANESE_SHRINES.find((s) => s.id === initialSaved.shrineId);
+      if (found) return found;
+    }
+    return JAPANESE_SHRINES[0];
+  });
+  const [userWish, setUserWish] = useState<string>(() => initialSaved?.userWish || '');
   const [isRingingBell, setIsRingingBell] = useState<boolean>(false);
   const [isShaking, setIsShaking] = useState<boolean>(false);
-  const [fallenStick, setFallenStick] = useState<number | null>(null);
-  const [revealedFortune, setRevealedFortune] = useState<OmikujiFortune | null>(null);
-  const [isTiedToShrine, setIsTiedToShrine] = useState<boolean>(false);
+  const [fallenStick, setFallenStick] = useState<number | null>(() => initialSaved?.fallenStick ?? null);
+  const [revealedFortune, setRevealedFortune] = useState<OmikujiFortune | null>(() => {
+    if (initialSaved?.fortuneNumber) {
+      return OMIKUJI_FORTUNES.find((f) => f.number === initialSaved.fortuneNumber) || null;
+    }
+    return null;
+  });
+  const [isTiedToShrine, setIsTiedToShrine] = useState<boolean>(() => initialSaved?.isTiedToShrine || false);
   const [isBrowsingAll, setIsBrowsingAll] = useState<boolean>(false);
   const [selectedBrowseSlip, setSelectedBrowseSlip] = useState<OmikujiFortune | null>(null);
   const [filterRank, setFilterRank] = useState<string>('all');
@@ -142,6 +166,17 @@ export const OmikujiPage: React.FC = () => {
         setRevealedFortune(fortune);
         triggerConfetti();
 
+        // Save result to localStorage with 1-day TTL
+        if (fortune) {
+          setStorageWithTTL<StoredOmikujiResult>(OMIKUJI_STORAGE_KEY, {
+            shrineId: selectedShrine.id,
+            userWish,
+            fallenStick: randomStickNumber,
+            fortuneNumber: fortune.number,
+            isTiedToShrine: false,
+          });
+        }
+
         setTimeout(() => {
           const el = document.getElementById('omikuji-result');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -155,12 +190,23 @@ export const OmikujiPage: React.FC = () => {
     setFallenStick(null);
     setRevealedFortune(null);
     setIsTiedToShrine(false);
+    removeStorage(OMIKUJI_STORAGE_KEY);
   };
 
   // Tie to Shrine
   const handleTieToShrine = () => {
     setIsTiedToShrine(true);
     triggerConfetti();
+
+    if (revealedFortune) {
+      setStorageWithTTL<StoredOmikujiResult>(OMIKUJI_STORAGE_KEY, {
+        shrineId: selectedShrine.id,
+        userWish,
+        fallenStick: fallenStick || revealedFortune.number,
+        fortuneNumber: revealedFortune.number,
+        isTiedToShrine: true,
+      });
+    }
   };
 
   // Copy fortune
