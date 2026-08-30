@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
 @layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     background-color: #040508;
     color: #f8fafc;
     font-family: 'Prompt', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
+    touch-action: manipulation;
   }
 }
 
@@ -17,6 +26,7 @@
   padding: 0;
   border: none;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .font-cinzel {

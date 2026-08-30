@@ -233,66 +233,66 @@ export const ThaiSiamsiPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn">
       {/* Banner / Header */}
-      <div className="text-center space-y-3 py-2">
-        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-amber-950/90 border border-amber-500/40 text-amber-300 shadow-md">
+      <div className="text-center space-y-2.5 sm:space-y-3 py-1 sm:py-2">
+        <span className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-950/90 border border-amber-500/40 text-amber-300 shadow-md">
           <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> ศาสตร์แห่งการเสี่ยงเซียมซีไทยโบราณ ๒๘ ใบมงคล
         </span>
-        <h2 className="text-3xl sm:text-5xl font-black bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-400 bg-clip-text text-transparent tracking-wide">
+        <h2 className="text-2xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-400 bg-clip-text text-transparent tracking-wide leading-tight px-1">
           เสี่ยงเซียมซีไทยมงคล (๒๘ ใบ)
         </h2>
-        <p className="text-xs sm:text-sm text-slate-300/80 max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-300/80 max-w-xl mx-auto leading-relaxed px-2">
           น้อมจิตอธิษฐานต่อพระพุทธคุณและสิ่งศักดิ์สิทธิ์ประจำวัดดัง จุดธูป ๓ ดอก แล้วเขย่ากระบอกเซียมซีเพื่อรับคำพยากรณ์
         </p>
       </div>
 
       {/* Mode Switch: Divination vs All Slips */}
       <div className="flex justify-center">
-        <div className="inline-flex p-1.5 rounded-2xl bg-slate-900/90 border border-amber-500/30 shadow-inner">
+        <div className="inline-flex p-1 sm:p-1.5 rounded-xl sm:rounded-2xl bg-slate-900/90 border border-amber-500/30 shadow-inner gap-1 w-full sm:w-auto">
           <button
             onClick={() => {
               setIsBrowsingAll(false);
               setSelectedBrowseSlip(null);
             }}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 ${
               !isBrowsingAll
                 ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 shadow-lg shadow-amber-600/30 scale-[1.02]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-slate-950" />
-            เขย่าเซียมซีเสี่ยงทาย
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950" />
+            <span>เขย่าเซียมซี</span>
           </button>
           <button
             onClick={() => setIsBrowsingAll(true)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 ${
               isBrowsingAll
                 ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 shadow-lg shadow-amber-600/30 scale-[1.02]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <BookOpen className="w-4 h-4 text-amber-400" />
-            สารานุกรมใบเซียมซี ๒๘ ใบ
+            <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
+            <span>สารานุกรม ๒๘ ใบ</span>
           </button>
         </div>
       </div>
 
       {!isBrowsingAll ? (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Step 1: Select Shrine / Temple */}
-          <section className="glass-panel rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+          <section className="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider mb-4 flex items-center gap-2 font-cinzel">
-              <Building2 className="w-4 h-4 text-amber-400" />
+            <h3 className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider mb-3 sm:mb-4 flex items-center gap-2 font-cinzel">
+              <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
               ขั้นตอนที่ ๑: เลือกวัด & ศาลเจ้าศักดิ์สิทธิ์ประจำประเทศไทย
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {THAI_SHRINES.map((shrine) => (
                 <button
                   key={shrine.id}
                   onClick={() => setSelectedShrine(shrine)}
-                  className={`text-left p-4.5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+                  className={`text-left p-3.5 sm:p-4.5 rounded-xl sm:rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between active:scale-[0.99] ${
                     selectedShrine.id === shrine.id
                       ? 'bg-gradient-to-br from-amber-950/60 via-slate-900 to-yellow-950/60 border-amber-400 shadow-xl shadow-amber-500/20 ring-1 ring-amber-400/50 scale-[1.02]'
                       : 'bg-slate-950/50 border-purple-900/30 hover:border-amber-500/40 hover:bg-slate-900/60'
@@ -313,14 +313,14 @@ export const ThaiSiamsiPage: React.FC = () => {
           </section>
 
           {/* Step 2: Mental Focus / Prayer Intention */}
-          <section className="glass-panel rounded-3xl p-6 shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2 font-cinzel">
-              <Flame className="w-4 h-4 text-amber-400" />
+          <section className="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-3 sm:space-y-4">
+            <h3 className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2 font-cinzel">
+              <Flame className="w-4 h-4 text-amber-400 shrink-0" />
               ขั้นตอนที่ ๒: ตั้งจิตอธิษฐาน & ระบุเรื่องที่ต้องการถาม (จุดธูป ๓ ดอก)
             </h3>
-            <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-950/70 p-4.5 rounded-2xl border border-amber-950/60">
+            <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 bg-slate-950/70 p-3.5 sm:p-4.5 rounded-2xl border border-amber-950/60">
               {/* Incense Burner Graphic */}
-              <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-amber-950/40 to-slate-950 border border-amber-900/40 shrink-0">
+              <div className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-gradient-to-b from-amber-950/40 to-slate-950 border border-amber-900/40 shrink-0 w-full sm:w-auto">
                 {/* Smoke particles */}
                 <div className="relative w-8 h-8 flex justify-center">
                   <div className="w-1 h-3 bg-amber-200/60 rounded-full blur-[1px] animate-smoke"></div>
@@ -340,7 +340,7 @@ export const ThaiSiamsiPage: React.FC = () => {
                 <span className="text-[10px] text-amber-300 font-bold mt-1">ธูป ๓ ดอก</span>
               </div>
 
-              <div className="flex-1 w-full space-y-2">
+              <div className="flex-1 w-full space-y-1.5 sm:space-y-2">
                 <label className="text-xs text-slate-300 font-medium block">
                   ระบุชื่อ-นามสกุล หรือเรื่องที่ต้องการขอความกระจ่าง (ทางเลือก):
                 </label>
@@ -349,33 +349,33 @@ export const ThaiSiamsiPage: React.FC = () => {
                   value={userWish}
                   onChange={(e) => setUserWish(e.target.value)}
                   placeholder="เช่น เรื่องการสอบเลื่อนตำแหน่ง, การค้าขาย, ความรัก..."
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-amber-900/50 focus:border-amber-400 focus:outline-none text-slate-100 text-sm placeholder:text-slate-600 transition-colors"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-slate-900/90 border border-amber-900/50 focus:border-amber-400 focus:outline-none text-slate-100 text-xs sm:text-sm placeholder:text-slate-600 transition-colors"
                 />
               </div>
             </div>
           </section>
 
           {/* Step 3: Interactive Cylinder and Divination Action */}
-          <section className="glass-panel rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
-            <div className="max-w-md mx-auto space-y-6">
+          <section className="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl text-center relative overflow-hidden">
+            <div className="max-w-md mx-auto space-y-5 sm:space-y-6">
               {/* Bamboo Cylinder Visual */}
-              <div className="relative flex flex-col items-center justify-center py-4">
+              <div className="relative flex flex-col items-center justify-center py-2 sm:py-4">
                 <div
-                  className={`relative w-28 h-48 rounded-2xl bg-gradient-to-r from-red-900 via-red-700 to-red-950 border-4 border-amber-400 shadow-2xl flex flex-col items-center justify-between p-3 overflow-visible cursor-pointer transition-transform ${
+                  className={`relative w-24 h-44 sm:w-28 sm:h-48 rounded-2xl bg-gradient-to-r from-red-900 via-red-700 to-red-950 border-4 border-amber-400 shadow-2xl flex flex-col items-center justify-between p-2.5 sm:p-3 overflow-visible cursor-pointer transition-transform active:scale-95 ${
                     isShaking ? 'cylinder-shaking' : 'hover:scale-105'
                   }`}
                   onClick={handleShakeCylinder}
                 >
                   {/* Bamboo Sticks Peeking out from cylinder */}
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex gap-1.5 items-end justify-center w-full px-2">
+                  <div className="absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-1.5 items-end justify-center w-full px-2">
                     {Array.from({ length: 9 }).map((_, i) => (
                       <div
                         key={i}
-                        className={`w-1.5 rounded-t-sm bg-gradient-to-t from-amber-400 to-amber-200 border-t border-amber-100 shadow-sm transition-all ${
+                        className={`w-1 sm:w-1.5 rounded-t-sm bg-gradient-to-t from-amber-400 to-amber-200 border-t border-amber-100 shadow-sm transition-all ${
                           isShaking ? 'animate-pulse' : ''
                         }`}
                         style={{
-                          height: `${28 + (i % 3) * 6}px`,
+                          height: `${24 + (i % 3) * 5}px`,
                           transform: isShaking ? `translateY(${Math.sin(i) * 6}px)` : 'none'
                         }}
                       />
@@ -383,19 +383,19 @@ export const ThaiSiamsiPage: React.FC = () => {
                   </div>
 
                   {/* Cylinder Golden Crest */}
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-[2px] shadow-lg mt-2">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-[2px] shadow-lg mt-2">
                     <div className="w-full h-full bg-red-950 rounded-full flex flex-col items-center justify-center border border-amber-300">
-                      <span className="text-[10px] font-bold text-amber-300 font-serif">เซียมซี</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold text-amber-300 font-serif">เซียมซี</span>
                       <span className="text-[8px] font-bold text-amber-200">๒๘ ใบ</span>
                     </div>
                   </div>
 
                   {/* Dragon / Cloud Gold Filigree */}
                   <div className="w-full text-center">
-                    <div className="text-[10px] text-amber-300/90 font-serif tracking-widest uppercase">
+                    <div className="text-[9px] sm:text-[10px] text-amber-300/90 font-serif tracking-widest uppercase">
                       มงคลศักดิ์สิทธิ์
                     </div>
-                    <div className="text-[9px] text-amber-400/70 font-mono">
+                    <div className="text-[8px] sm:text-[9px] text-amber-400/70 font-mono truncate">
                       {selectedShrine.name.slice(0, 14)}
                     </div>
                   </div>
@@ -409,25 +409,25 @@ export const ThaiSiamsiPage: React.FC = () => {
 
               {/* Action Button */}
               {!fallenStick ? (
-                <div className="space-y-3">
+                <div className="space-y-2.5 sm:space-y-3">
                   <button
                     onClick={handleShakeCylinder}
                     disabled={isShaking}
-                    className="btn-gold-shimmer group relative inline-flex items-center gap-3 px-10 py-4.5 rounded-2xl text-slate-950 font-black text-lg tracking-wide shadow-2xl hover:scale-[1.03] active:scale-95 transition-all duration-300 cursor-pointer border border-amber-300/40 disabled:opacity-50"
+                    className="btn-gold-shimmer group relative inline-flex items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto px-6 sm:px-10 py-3.5 sm:py-4.5 rounded-2xl text-slate-950 font-black text-base sm:text-lg tracking-wide shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer border border-amber-300/40 disabled:opacity-50"
                   >
                     {isShaking ? (
                       <>
-                        <RotateCcw className="w-6 h-6 animate-spin text-slate-950" />
+                        <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-slate-950" />
                         กำลังเขย่ากระบอกเซียมซี...
                       </>
                     ) : (
                       <>
-                        <Dices className="w-6 h-6 group-hover:rotate-180 transition-transform duration-500 text-slate-950" />
+                        <Dices className="w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-180 transition-transform duration-500 text-slate-950" />
                         เขย่ากระบอกเซียมซีไทย
                       </>
                     )}
                   </button>
-                  <p className="text-xs text-amber-200/70">
+                  <p className="text-[11px] sm:text-xs text-amber-200/70">
                     💡 ตั้งจิตนึกถึงเรื่องที่ท่านต้องการ แล้วกดปุ่มหรือคลิกที่กระบอกไม้ไผ่
                   </p>
                 </div>
@@ -435,11 +435,11 @@ export const ThaiSiamsiPage: React.FC = () => {
 
               {/* Stick has fallen! */}
               {fallenStick && !confirmedFortune && (
-                <div className="space-y-6 stick-drop-anim">
+                <div className="space-y-4 sm:space-y-6 stick-drop-anim">
                   {/* The Golden Stick */}
-                  <div className="inline-block p-4 rounded-2xl bg-gradient-to-b from-amber-200 via-amber-100 to-amber-300 border-2 border-amber-500 shadow-2xl text-slate-950 font-black">
-                    <span className="text-xs text-amber-900 block font-bold">🎋 ไม้ติ้วเซียมซีหล่นลงมา</span>
-                    <div className="text-3xl font-extrabold text-red-800 my-1 font-serif">
+                  <div className="inline-block p-3.5 sm:p-4 rounded-2xl bg-gradient-to-b from-amber-200 via-amber-100 to-amber-300 border-2 border-amber-500 shadow-2xl text-slate-950 font-black">
+                    <span className="text-[11px] sm:text-xs text-amber-900 block font-bold">🎋 ไม้ติ้วเซียมซีหล่นลงมา</span>
+                    <div className="text-2xl sm:text-3xl font-extrabold text-red-800 my-1 font-serif">
                       หมายเลข ๑{toThaiNumber(fallenStick)} ({fallenStick})
                     </div>
                     <span className="text-[11px] text-amber-950/80 font-medium">
@@ -448,9 +448,9 @@ export const ThaiSiamsiPage: React.FC = () => {
                   </div>
 
                   {/* Moon Blocks Confirmation Step */}
-                  <div className="bg-slate-950/80 p-6 rounded-2xl border border-amber-500/40 space-y-4">
-                    <h4 className="text-sm font-bold text-amber-300 flex items-center justify-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-400" />
+                  <div className="bg-slate-950/80 p-4 sm:p-6 rounded-2xl border border-amber-500/40 space-y-3 sm:space-y-4">
+                    <h4 className="text-xs sm:text-sm font-bold text-amber-300 flex items-center justify-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
                       โยนไม้ปวย (Sheng Bei) เสี่ยงทายยืนยันคำทำนาย
                     </h4>
                     <p className="text-xs text-slate-300 leading-relaxed">
@@ -459,34 +459,34 @@ export const ThaiSiamsiPage: React.FC = () => {
 
                     {/* Throw Results Display */}
                     {poeiResult && (
-                      <div className="p-4 rounded-xl border animate-fadeIn space-y-2 bg-slate-900">
+                      <div className="p-3 sm:p-4 rounded-xl border animate-fadeIn space-y-1.5 bg-slate-900 text-center">
                         {poeiResult === 'shua' && (
                           <div className="text-emerald-400 space-y-1">
-                            <span className="font-bold text-base block">🌟 ชัวปวย (คว่ำ ๑ หงาย ๑) — เทพเจ้ายินยอม!</span>
+                            <span className="font-bold text-sm sm:text-base block">🌟 ชัวปวย (คว่ำ ๑ หงาย ๑) — เทพเจ้ายินยอม!</span>
                             <p className="text-xs text-slate-300">สิ่งศักดิ์สิทธิ์รับรองว่านี่คือคำทำนายที่แท้จริงของท่าน</p>
                           </div>
                         )}
                         {poeiResult === 'im' && (
                           <div className="text-rose-400 space-y-1">
-                            <span className="font-bold text-base block">⚠️ อิมปวย (คว่ำทั้ง ๒) — เทพเจ้ายังไม่อนุมัติ</span>
+                            <span className="font-bold text-sm sm:text-base block">⚠️ อิมปวย (คว่ำทั้ง ๒) — เทพเจ้ายังไม่อนุมัติ</span>
                             <p className="text-xs text-slate-300">จิตใจอาจยังไม่นิ่ง หรือยังไม่ใช่จังหวะเวลา กรุณาตั้งจิตใหม่แล้วเขย่าอีกครั้ง</p>
                           </div>
                         )}
                         {poeiResult === 'yang' && (
                           <div className="text-amber-400 space-y-1">
-                            <span className="font-bold text-base block">🎋 เอี้ยงปวย (หงายทั้ง ๒) — เทพเจ้าทรงสรวล</span>
+                            <span className="font-bold text-sm sm:text-base block">🎋 เอี้ยงปวย (หงายทั้ง ๒) — เทพเจ้าทรงสรวล</span>
                             <p className="text-xs text-slate-300">เรื่องนี้ท่านรู้คำตอบในใจดีอยู่แล้ว หรือเป็นเรื่องที่ต้องตัดสินใจด้วยตนเอง</p>
                           </div>
                         )}
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 pt-2">
                       {poeiResult !== 'shua' && (
                         <button
                           onClick={handleThrowPoei}
                           disabled={isThrowingPoei}
-                          className="px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 text-white font-bold text-xs sm:text-sm flex items-center gap-2 cursor-pointer hover:scale-105 transition-all shadow-lg"
+                          className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-lg"
                         >
                           <Dices className={`w-4 h-4 ${isThrowingPoei ? 'animate-spin' : ''}`} />
                           {isThrowingPoei ? 'กำลังทอดไม้ปวย...' : 'โยนไม้ปวยเสี่ยงทาย'}
@@ -495,7 +495,7 @@ export const ThaiSiamsiPage: React.FC = () => {
 
                       <button
                         onClick={handleDirectReveal}
-                        className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/50 text-amber-200 font-bold text-xs sm:text-sm flex items-center gap-2 cursor-pointer transition-all hover:scale-105"
+                        className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/50 text-amber-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95"
                       >
                         <ChevronRight className="w-4 h-4" />
                         เปิดอ่านใบเซียมซีทันที
@@ -503,7 +503,7 @@ export const ThaiSiamsiPage: React.FC = () => {
 
                       <button
                         onClick={handleReset}
-                        className="px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-red-800/40 text-red-300 font-bold text-xs cursor-pointer"
+                        className="px-4 py-2.5 sm:py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-red-800/40 text-red-300 font-bold text-xs cursor-pointer active:scale-95"
                       >
                         เขย่าใหม่
                       </button>
@@ -516,112 +516,112 @@ export const ThaiSiamsiPage: React.FC = () => {
 
           {/* Result: The Authentic Traditional Fortune Slip */}
           {confirmedFortune && (
-            <section className="space-y-6 pt-4 animate-fadeIn">
+            <section className="space-y-4 sm:space-y-6 pt-3 sm:pt-4 animate-fadeIn">
               <div className="text-center space-y-1">
-                <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-red-950/80 border border-amber-400/40 text-amber-300 text-xs font-bold shadow-md">
+                <div className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1 rounded-full bg-red-950/80 border border-amber-400/40 text-amber-300 text-[11px] sm:text-xs font-bold shadow-md">
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" /> คำทำนายเซียมซีของท่าน
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
+                <h3 className="text-xl sm:text-3xl font-extrabold bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-400 bg-clip-text text-transparent px-1">
                   ใบเซียมซีหมายเลข ๑{toThaiNumber(confirmedFortune.number)} ({confirmedFortune.number})
                 </h3>
               </div>
 
               {/* Traditional Scroll Slip */}
-              <div className="max-w-2xl mx-auto rounded-3xl bg-gradient-to-b from-amber-50 via-amber-100 to-amber-200 border-4 border-amber-600/70 p-6 sm:p-10 shadow-2xl relative overflow-hidden text-amber-950">
+              <div className="max-w-2xl mx-auto rounded-2xl sm:rounded-3xl bg-gradient-to-b from-amber-50 via-amber-100 to-amber-200 border-2 sm:border-4 border-amber-600/70 p-4 sm:p-8 sm:p-10 shadow-2xl relative overflow-hidden text-amber-950">
                 {/* Red Imperial Seal Watermark in background */}
-                <div className="absolute top-6 right-6 w-24 h-24 rounded-2xl border-4 border-red-600/25 flex flex-col items-center justify-center rotate-12 pointer-events-none">
-                  <span className="text-red-700/30 text-xs font-bold font-serif">ศาลเจ้ามงคล</span>
-                  <span className="text-red-700/30 text-[10px] font-mono">大吉大利</span>
+                <div className="absolute top-4 sm:top-6 right-4 sm:right-6 w-16 h-16 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-red-600/25 flex flex-col items-center justify-center rotate-12 pointer-events-none">
+                  <span className="text-red-700/30 text-[9px] sm:text-xs font-bold font-serif">ศาลเจ้ามงคล</span>
+                  <span className="text-red-700/30 text-[8px] sm:text-[10px] font-mono">大吉大利</span>
                 </div>
 
                 {/* Header of Slip */}
-                <div className="text-center border-b-2 border-amber-700/30 pb-6 space-y-2">
-                  <div className="text-xs font-bold tracking-widest text-amber-900 uppercase">
+                <div className="text-center border-b-2 border-amber-700/30 pb-4 sm:pb-6 space-y-1.5 sm:space-y-2">
+                  <div className="text-[10px] sm:text-xs font-bold tracking-widest text-amber-900 uppercase">
                     {selectedShrine.name} • {selectedShrine.location}
                   </div>
-                  <h4 className="text-2xl sm:text-3xl font-black text-red-900 font-serif">
+                  <h4 className="text-xl sm:text-3xl font-black text-red-900 font-serif">
                     ใบที่ ๑{toThaiNumber(confirmedFortune.number)} : {confirmedFortune.title}
                   </h4>
-                  <div className="pt-2">
-                    <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold border ${getGradeBadge(confirmedFortune.grade)}`}>
+                  <div className="pt-1.5 sm:pt-2">
+                    <span className={`inline-block px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold border ${getGradeBadge(confirmedFortune.grade)}`}>
                       เกณฑ์ชะตา: {confirmedFortune.grade}
                     </span>
                   </div>
                 </div>
 
                 {/* The Traditional 4-Line Poem */}
-                <div className="my-6 p-5 rounded-2xl bg-amber-100/70 border border-amber-400/50 text-center space-y-1.5 shadow-inner">
-                  <span className="text-[11px] font-bold text-red-900 block uppercase tracking-wider mb-2">
+                <div className="my-4 sm:my-6 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-amber-100/70 border border-amber-400/50 text-center space-y-1 sm:space-y-1.5 shadow-inner">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-red-900 block uppercase tracking-wider mb-1 sm:mb-2">
                     📜 บทกลอนทำนายโบราณ
                   </span>
                   {confirmedFortune.poem.map((line, idx) => (
-                    <p key={idx} className="text-sm sm:text-base font-semibold text-amber-950 font-serif leading-relaxed m-0">
+                    <p key={idx} className="text-xs sm:text-base font-semibold text-amber-950 font-serif leading-relaxed m-0">
                       "{line}"
                     </p>
                   ))}
                 </div>
 
                 {/* Categorized Readings */}
-                <div className="space-y-4 text-xs sm:text-sm text-amber-950 leading-relaxed">
+                <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-amber-950 leading-relaxed">
                   {/* Overview */}
-                  <div className="p-4 rounded-xl bg-amber-50/90 border border-amber-300/80 shadow-sm">
-                    <strong className="text-red-900 flex items-center gap-1.5 mb-1 font-bold text-sm">
-                      <Sparkles className="w-4 h-4 text-amber-600" /> ภาพรวมดวงชะตา:
+                  <div className="p-3 sm:p-4 rounded-xl bg-amber-50/90 border border-amber-300/80 shadow-sm">
+                    <strong className="text-red-900 flex items-center gap-1.5 mb-1 font-bold text-xs sm:text-sm">
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 shrink-0" /> ภาพรวมดวงชะตา:
                     </strong>
                     <p className="text-amber-950 m-0 leading-relaxed">{confirmedFortune.overview}</p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="p-3.5 rounded-xl bg-white/70 border border-amber-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                    <div className="p-3 sm:p-3.5 rounded-xl bg-white/70 border border-amber-200">
                       <strong className="text-blue-900 flex items-center gap-1.5 mb-1 font-bold text-xs">
-                        <Briefcase className="w-3.5 h-3.5 text-blue-600" /> การงาน & การค้า:
+                        <Briefcase className="w-3.5 h-3.5 text-blue-600 shrink-0" /> การงาน & การค้า:
                       </strong>
                       <p className="text-amber-950 m-0 text-xs">{confirmedFortune.work}</p>
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-white/70 border border-amber-200">
+                    <div className="p-3 sm:p-3.5 rounded-xl bg-white/70 border border-amber-200">
                       <strong className="text-emerald-900 flex items-center gap-1.5 mb-1 font-bold text-xs">
-                        <Coins className="w-3.5 h-3.5 text-emerald-600" /> การเงิน & ทรัพย์สิน:
+                        <Coins className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> การเงิน & ทรัพย์สิน:
                       </strong>
                       <p className="text-amber-950 m-0 text-xs">{confirmedFortune.finance}</p>
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-white/70 border border-amber-200">
+                    <div className="p-3 sm:p-3.5 rounded-xl bg-white/70 border border-amber-200">
                       <strong className="text-rose-900 flex items-center gap-1.5 mb-1 font-bold text-xs">
-                        <Heart className="w-3.5 h-3.5 text-rose-600" /> ความรัก & คู่ครอง:
+                        <Heart className="w-3.5 h-3.5 text-rose-600 shrink-0" /> ความรัก & คู่ครอง:
                       </strong>
                       <p className="text-amber-950 m-0 text-xs">{confirmedFortune.love}</p>
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-white/70 border border-amber-200">
+                    <div className="p-3 sm:p-3.5 rounded-xl bg-white/70 border border-amber-200">
                       <strong className="text-cyan-900 flex items-center gap-1.5 mb-1 font-bold text-xs">
-                        <Activity className="w-3.5 h-3.5 text-cyan-600" /> สุขภาพ & โรคภัย:
+                        <Activity className="w-3.5 h-3.5 text-cyan-600 shrink-0" /> สุขภาพ & โรคภัย:
                       </strong>
                       <p className="text-amber-950 m-0 text-xs">{confirmedFortune.health}</p>
                     </div>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-white/70 border border-amber-200">
+                  <div className="p-3 sm:p-3.5 rounded-xl bg-white/70 border border-amber-200">
                     <strong className="text-amber-900 flex items-center gap-1.5 mb-1 font-bold text-xs">
-                      <Dices className="w-3.5 h-3.5 text-amber-600" /> โชคลาภ & ลาภลอย:
+                      <Dices className="w-3.5 h-3.5 text-amber-600 shrink-0" /> โชคลาภ & ลาภลอย:
                     </strong>
                     <p className="text-amber-950 m-0 text-xs">{confirmedFortune.luck}</p>
                   </div>
 
                   {/* Holy Blessing Advice */}
-                  <div className="p-4 rounded-xl bg-gradient-to-r from-red-900 to-amber-900 text-white shadow-md">
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-red-900 to-amber-900 text-white shadow-md">
                     <strong className="text-amber-300 flex items-center gap-1.5 mb-1 font-bold text-xs sm:text-sm">
-                      <Shield className="w-4 h-4 text-amber-300" /> คำแนะนำเสริมดวงชะตา & การทำบุญ:
+                      <Shield className="w-4 h-4 text-amber-300 shrink-0" /> คำแนะนำเสริมดวงชะตา & การทำบุญ:
                     </strong>
                     <p className="text-amber-100 m-0 text-xs leading-relaxed">{confirmedFortune.holyAdvice}</p>
                   </div>
                 </div>
 
                 {/* Share / Copy and Reset Buttons */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-6 border-t-2 border-amber-700/30 mt-6">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 pt-4 sm:pt-6 border-t-2 border-amber-700/30 mt-4 sm:mt-6">
                   <button
                     onClick={handleCopyFortune}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-900 hover:bg-amber-950 text-white text-xs font-bold cursor-pointer transition-all shadow-md"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-900 hover:bg-amber-950 text-white text-xs font-bold cursor-pointer transition-all shadow-md active:scale-95"
                   >
                     {isCopied ? (
                       <>
@@ -638,10 +638,10 @@ export const ThaiSiamsiPage: React.FC = () => {
 
                   <button
                     onClick={handleReset}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-red-800 hover:bg-red-900 text-white text-xs font-bold cursor-pointer transition-all shadow-md"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-red-800 hover:bg-red-900 text-white text-xs font-bold cursor-pointer transition-all shadow-md active:scale-95"
                   >
                     <RotateCcw className="w-4 h-4" />
-                    เสี่ยงเซียมซีใหม่อีกครั้ง
+                    เสี่ยงใหม่อีกครั้ง
                   </button>
                 </div>
               </div>
@@ -650,31 +650,31 @@ export const ThaiSiamsiPage: React.FC = () => {
         </div>
       ) : (
         /* Encyclopedia of all 28 Fortune Slips */
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
+            <h3 className="text-xl sm:text-3xl font-extrabold bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
               สารานุกรมใบเซียมซีไทย ๒๘ ใบมงคล
             </h3>
-            <p className="text-xs sm:text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400 px-2">
               คลิกที่ใบเซียมซีแต่ละหมายเลขเพื่ออ่านบทกลอนและคำทำนายฉบับเต็ม
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
             {THAI_SIAMSI_FORTUNES.map((fortune) => (
               <button
                 key={fortune.number}
                 onClick={() => setSelectedBrowseSlip(fortune)}
-                className="glass-panel hover:border-amber-400 rounded-2xl p-4 flex flex-col items-center text-center transition-all duration-300 cursor-pointer hover:scale-105 group"
+                className="glass-panel hover:border-amber-400 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col items-center text-center transition-all duration-300 cursor-pointer active:scale-95 group"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-900 to-yellow-700 border border-amber-400/50 flex flex-col items-center justify-center text-amber-200 font-bold mb-2 shadow-md group-hover:scale-110 transition-transform">
-                  <span className="text-xs font-serif">ใบที่</span>
-                  <span className="text-base font-extrabold">{fortune.number}</span>
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-amber-900 to-yellow-700 border border-amber-400/50 flex flex-col items-center justify-center text-amber-200 font-bold mb-1.5 sm:mb-2 shadow-md group-hover:scale-110 transition-transform">
+                  <span className="text-[10px] sm:text-xs font-serif">ใบที่</span>
+                  <span className="text-sm sm:text-base font-extrabold">{fortune.number}</span>
                 </div>
                 <span className="text-xs font-bold text-slate-200 group-hover:text-amber-300 line-clamp-1">
                   {fortune.title}
                 </span>
-                <span className="text-[10px] text-amber-400/80 mt-1">
+                <span className="text-[10px] text-amber-400/80 mt-0.5">
                   {fortune.grade.split(' ')[0]}
                 </span>
               </button>
@@ -683,62 +683,62 @@ export const ThaiSiamsiPage: React.FC = () => {
 
           {/* Modal Browse Detail */}
           {selectedBrowseSlip && (
-            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
-              <div className="bg-slate-950 border border-amber-500/40 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative shadow-2xl space-y-6">
+            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-fadeIn">
+              <div className="bg-slate-950 border border-amber-500/40 rounded-2xl sm:rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-4 sm:p-8 relative shadow-2xl space-y-4 sm:space-y-6">
                 <button
                   onClick={() => setSelectedBrowseSlip(null)}
-                  className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-900 border border-amber-800 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
+                  className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-900 border border-amber-800 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
                 >
                   ✕
                 </button>
 
-                <div className="text-center space-y-2 border-b border-amber-900/40 pb-4">
-                  <span className="text-xs font-bold text-amber-400 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-700">
+                <div className="text-center space-y-1.5 sm:space-y-2 border-b border-amber-900/40 pb-3 sm:pb-4">
+                  <span className="text-[11px] sm:text-xs font-bold text-amber-400 px-3 py-0.5 sm:py-1 rounded-full bg-amber-950/80 border border-amber-700">
                     ใบเซียมซีหมายเลข ๑{selectedBrowseSlip.thaiNumber} ({selectedBrowseSlip.number})
                   </span>
-                  <h3 className="text-2xl font-black text-amber-200">{selectedBrowseSlip.title}</h3>
-                  <span className={`inline-block px-3.5 py-1 rounded-full text-xs font-bold border ${getGradeBadge(selectedBrowseSlip.grade)}`}>
+                  <h3 className="text-xl sm:text-2xl font-black text-amber-200">{selectedBrowseSlip.title}</h3>
+                  <span className={`inline-block px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full text-xs font-bold border ${getGradeBadge(selectedBrowseSlip.grade)}`}>
                     เกณฑ์ชะตา: {selectedBrowseSlip.grade}
                   </span>
                 </div>
 
                 {/* Poem */}
-                <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-center space-y-1">
-                  <span className="text-[10px] font-bold text-amber-300 block mb-1">📜 บทกลอน</span>
+                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-950/40 border border-amber-500/30 text-center space-y-1">
+                  <span className="text-[10px] font-bold text-amber-300 block mb-0.5 sm:mb-1">📜 บทกลอน</span>
                   {selectedBrowseSlip.poem.map((line, i) => (
-                    <p key={i} className="text-sm font-semibold text-amber-100 font-serif m-0">
+                    <p key={i} className="text-xs sm:text-sm font-semibold text-amber-100 font-serif m-0">
                       "{line}"
                     </p>
                   ))}
                 </div>
 
                 {/* Breakdown */}
-                <div className="space-y-3 text-xs">
-                  <div className="bg-slate-900/90 p-3.5 rounded-xl border border-amber-900/40">
+                <div className="space-y-2.5 sm:space-y-3 text-xs">
+                  <div className="bg-slate-900/90 p-3 sm:p-3.5 rounded-xl border border-amber-900/40">
                     <strong className="text-amber-300 block mb-1">ภาพรวม:</strong>
                     <p className="text-slate-300 leading-relaxed">{selectedBrowseSlip.overview}</p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <div className="bg-slate-900/90 p-3 rounded-xl border border-amber-900/40">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                    <div className="bg-slate-900/90 p-2.5 sm:p-3 rounded-xl border border-amber-900/40">
                       <strong className="text-blue-400 block mb-0.5">การงาน:</strong>
                       <p className="text-slate-300">{selectedBrowseSlip.work}</p>
                     </div>
-                    <div className="bg-slate-900/90 p-3 rounded-xl border border-amber-900/40">
+                    <div className="bg-slate-900/90 p-2.5 sm:p-3 rounded-xl border border-amber-900/40">
                       <strong className="text-emerald-400 block mb-0.5">การเงิน:</strong>
                       <p className="text-slate-300">{selectedBrowseSlip.finance}</p>
                     </div>
-                    <div className="bg-slate-900/90 p-3 rounded-xl border border-amber-900/40">
+                    <div className="bg-slate-900/90 p-2.5 sm:p-3 rounded-xl border border-amber-900/40">
                       <strong className="text-rose-400 block mb-0.5">ความรัก:</strong>
                       <p className="text-slate-300">{selectedBrowseSlip.love}</p>
                     </div>
-                    <div className="bg-slate-900/90 p-3 rounded-xl border border-amber-900/40">
+                    <div className="bg-slate-900/90 p-2.5 sm:p-3 rounded-xl border border-amber-900/40">
                       <strong className="text-cyan-400 block mb-0.5">สุขภาพ:</strong>
                       <p className="text-slate-300">{selectedBrowseSlip.health}</p>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-r from-red-950 to-amber-950 p-3.5 rounded-xl border border-amber-500/40 text-amber-200">
+                  <div className="bg-gradient-to-r from-red-950 to-amber-950 p-3 sm:p-3.5 rounded-xl border border-amber-500/40 text-amber-200">
                     <strong className="text-amber-300 block mb-1">คำแนะนำเสริมดวง:</strong>
-                    <p className="m-0">{selectedBrowseSlip.holyAdvice}</p>
+                    <p className="m-0 leading-relaxed">{selectedBrowseSlip.holyAdvice}</p>
                   </div>
                 </div>
               </div>

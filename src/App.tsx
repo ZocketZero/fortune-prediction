@@ -69,43 +69,46 @@ export const App: React.FC = () => {
       </div>
 
       {/* Premium Header */}
-      <header className="relative z-20 border-b border-amber-500/30 bg-slate-950/85 backdrop-blur-2xl sticky top-0 shadow-2xl shadow-purple-950/80">
-        <div className="max-w-6xl mx-auto px-4 py-3.5 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <header className="relative z-20 border-b border-amber-500/30 bg-slate-950/90 backdrop-blur-2xl sticky top-0 shadow-2xl shadow-purple-950/80">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3.5 flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-4">
           <button
             onClick={() => navigateTo('home')}
-            className="flex items-center gap-3.5 cursor-pointer bg-transparent border-0 text-left p-0"
+            className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer bg-transparent border-0 text-left p-0 w-full md:w-auto justify-center md:justify-start active:scale-[0.98] transition-transform"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-600 to-purple-600 p-[1.5px] shadow-lg shadow-amber-500/20">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-600 to-purple-600 p-[1.5px] shadow-lg shadow-amber-500/20 shrink-0">
+              <div className="w-full h-full bg-slate-950 rounded-[10px] sm:rounded-[14px] flex items-center justify-center">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 animate-pulse" />
               </div>
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold gold-gradient-text m-0 tracking-tight font-cinzel-decorative">
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-extrabold gold-gradient-text m-0 tracking-tight font-cinzel-decorative leading-tight truncate">
                 ทำนายโชคชะตา
               </h1>
-              <p className="text-[11px] text-amber-200/70 m-0 font-medium">FORTUNE PREDICTION • ดูดวงไพ่ยิปซี เซียมซี และขอพรเทพเจ้า</p>
+              <p className="text-[10px] sm:text-[11px] text-amber-200/70 m-0 font-medium truncate max-w-[250px] sm:max-w-none">
+                FORTUNE PREDICTION • ไพ่ยิปซี เซียมซี และขอพรเทพเจ้า
+              </p>
             </div>
           </button>
 
-          {/* Navigation Dropdown */}
-          <nav className="relative">
-            <div className="relative inline-flex items-center">
+          {/* Navigation Dropdown & Quick Navigation */}
+          <nav className="w-full md:w-auto flex items-center justify-center">
+            <div className="relative w-full sm:w-auto inline-flex items-center">
               <select
                 value={activeTab}
                 onChange={(e) => navigateTo(e.target.value as AppTab)}
-                className="appearance-none bg-slate-900/90 border border-amber-500/30 text-slate-200 text-sm font-bold rounded-2xl px-4 py-2.5 pr-10 shadow-inner cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/60 transition-all duration-200 hover:border-amber-500/60 hover:bg-slate-800/90"
+                aria-label="เลือกเมนูพยากรณ์"
+                className="w-full sm:w-auto appearance-none bg-slate-900/95 border border-amber-500/30 text-slate-100 text-xs sm:text-sm font-bold rounded-xl sm:rounded-2xl px-3.5 sm:px-4 py-2 sm:py-2.5 pr-9 sm:pr-10 shadow-inner cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/60 transition-all duration-200 hover:border-amber-500/60 hover:bg-slate-800/90 active:scale-[0.99]"
               >
                 <option value="home">✨ หน้าหลัก</option>
-                <option value="reading">🧭 ไพ่ยิปซี</option>
-                <option value="omikuji">⛩️ เซียมซีญี่ปุ่น</option>
-                <option value="thai_siamsi">📜 เซียมซีไทย</option>
-                <option value="thai_blessing">🔥 ขอพรเทพไทย</option>
-                <option value="japan_blessing">🏛️ ขอพรเทพญี่ปุ่น</option>
-                <option value="encyclopedia">📖 สารานุกรม</option>
+                <option value="reading">🧭 ไพ่ยิปซี Major Arcana</option>
+                <option value="omikuji">⛩️ เซียมซีญี่ปุ่น (おみくじ)</option>
+                <option value="thai_siamsi">📜 เซียมซีไทย ๒๘ ใบ</option>
+                <option value="thai_blessing">🔥 ขอพรเทพเจ้าไทย</option>
+                <option value="japan_blessing">🏛️ ขอพรเทพเจ้าญี่ปุ่น (絵馬)</option>
+                <option value="encyclopedia">📖 สารานุกรมไพ่ยิปซี</option>
               </select>
               {/* Custom chevron */}
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-amber-400">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs sm:text-sm">
                 ▾
               </span>
             </div>
@@ -114,7 +117,7 @@ export const App: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
+      <main className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-8 flex-1 w-full space-y-6 sm:space-y-8">
         {activeTab === 'home' && <MainPage onNavigate={(tab) => navigateTo(tab)} />}
         {activeTab === 'reading' && <TarotReadingPage />}
         {activeTab === 'omikuji' && <OmikujiPage />}
@@ -125,8 +128,10 @@ export const App: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-purple-900/30 bg-slate-950/90 py-6 text-center text-xs text-purple-300/60 mt-auto">
-        <p>© 2026 ทำนายโชคชะตา (Fortune Prediction) • ดูดวงไพ่ยิปซี เซียมซี และขอพรเทพเจ้าเพื่อนำทางชีวิตด้วยสติและปัญญา</p>
+      <footer className="relative z-10 border-t border-purple-900/30 bg-slate-950/90 py-5 sm:py-6 px-4 text-center text-xs text-purple-300/60 mt-auto pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
+        <p className="max-w-xl mx-auto leading-relaxed">
+          © 2026 ทำนายโชคชะตา (Fortune Prediction) • ดูดวงไพ่ยิปซี เซียมซี และขอพรเทพเจ้าเพื่อนำทางชีวิตด้วยสติและปัญญา
+        </p>
       </footer>
     </div>
   );
