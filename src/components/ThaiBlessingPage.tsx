@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { THAI_DEITIES, type ThaiDeity } from '../data/thaiDeitiesData';
 import { Sparkles, Flame, Copy, Check, RefreshCw, Send, Heart, Star, Share2 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { triggerDivineBlessingLight } from '../utils/lightEffects';
 
 interface WishRecord {
   deity: ThaiDeity;
@@ -57,35 +57,8 @@ export const ThaiBlessingPage: React.FC = () => {
     }
   };
 
-  const triggerBlessingConfetti = () => {
-    try {
-      // Central golden aura shower
-      confetti({
-        particleCount: 80,
-        spread: 90,
-        origin: { y: 0.55 },
-        colors: ['#f59e0b', '#fbbf24', '#fef08a', '#f43f5e', '#a855f7', '#ffffff']
-      });
-      // Side burst canons
-      setTimeout(() => {
-        confetti({
-          particleCount: 45,
-          angle: 60,
-          spread: 60,
-          origin: { x: 0.05, y: 0.65 },
-          colors: ['#f59e0b', '#fbbf24', '#f43f5e', '#ffffff']
-        });
-        confetti({
-          particleCount: 45,
-          angle: 120,
-          spread: 60,
-          origin: { x: 0.95, y: 0.65 },
-          colors: ['#f59e0b', '#fbbf24', '#f43f5e', '#ffffff']
-        });
-      }, 300);
-    } catch (err) {
-      console.error(err);
-    }
+  const triggerBlessingLight = () => {
+    triggerDivineBlessingLight();
   };
 
   const handleCopyMantra = () => {
@@ -120,7 +93,7 @@ export const ThaiBlessingPage: React.FC = () => {
     }, 1800);
 
     const timer3 = setTimeout(() => {
-      triggerBlessingConfetti();
+      triggerBlessingLight();
       playSacredChime();
 
       setBlessingResult({

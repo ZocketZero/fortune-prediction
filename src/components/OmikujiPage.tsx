@@ -22,7 +22,7 @@ import {
   CheckCircle2,
   TreePine
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { triggerFortuneLight } from '../utils/lightEffects';
 import { getStorageWithTTL, setStorageWithTTL, removeStorage } from '../utils/storage';
 
 interface StoredOmikujiResult {
@@ -128,13 +128,8 @@ export const OmikujiPage: React.FC = () => {
     }
   };
 
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 95,
-      spread: 75,
-      origin: { y: 0.6 },
-      colors: ['#ea580c', '#e11d48', '#f59e0b', '#fbbf24', '#f43f5e', '#ffffff']
-    });
+  const triggerOmikujiLight = () => {
+    triggerFortuneLight('japan');
   };
 
   // Ring Shinto Bell
@@ -164,7 +159,7 @@ export const OmikujiPage: React.FC = () => {
       setTimeout(() => {
         const fortune = OMIKUJI_FORTUNES.find((f) => f.number === randomStickNumber) || null;
         setRevealedFortune(fortune);
-        triggerConfetti();
+        triggerOmikujiLight();
 
         // Save result to localStorage with 1-day TTL
         if (fortune) {
@@ -196,7 +191,7 @@ export const OmikujiPage: React.FC = () => {
   // Tie to Shrine
   const handleTieToShrine = () => {
     setIsTiedToShrine(true);
-    triggerConfetti();
+    triggerOmikujiLight();
 
     if (revealedFortune) {
       setStorageWithTTL<StoredOmikujiResult>(OMIKUJI_STORAGE_KEY, {

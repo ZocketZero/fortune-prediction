@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { JAPAN_DEITIES, type JapanDeity } from '../data/japanDeitiesData';
 import { Sparkles, Bell, Check, RefreshCw, Send, Bookmark, Compass, Heart, Share2 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { triggerSakuraLight } from '../utils/lightEffects';
 
 interface EmaWishRecord {
   deity: JapanDeity;
@@ -59,33 +59,8 @@ export const JapanBlessingPage: React.FC = () => {
     }
   };
 
-  const triggerSakuraConfetti = () => {
-    try {
-      confetti({
-        particleCount: 75,
-        spread: 85,
-        origin: { y: 0.55 },
-        colors: ['#ef4444', '#f43f5e', '#fbbf24', '#fecdd3', '#ffffff', '#fda4af']
-      });
-      setTimeout(() => {
-        confetti({
-          particleCount: 40,
-          angle: 60,
-          spread: 60,
-          origin: { x: 0.08, y: 0.6 },
-          colors: ['#f43f5e', '#fda4af', '#fbbf24', '#ffffff']
-        });
-        confetti({
-          particleCount: 40,
-          angle: 120,
-          spread: 60,
-          origin: { x: 0.92, y: 0.6 },
-          colors: ['#f43f5e', '#fda4af', '#fbbf24', '#ffffff']
-        });
-      }, 300);
-    } catch (err) {
-      console.error(err);
-    }
+  const triggerSakuraBlessingLight = () => {
+    triggerSakuraLight();
   };
 
   const handleSelectDeity = (deity: JapanDeity) => {
@@ -118,7 +93,7 @@ export const JapanBlessingPage: React.FC = () => {
     }, 1800);
 
     const timer3 = setTimeout(() => {
-      triggerSakuraConfetti();
+      triggerSakuraBlessingLight();
       playShintoSuzuBell();
 
       setBlessingResult({

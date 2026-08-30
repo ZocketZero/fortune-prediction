@@ -20,7 +20,7 @@ import {
   Building2,
   ChevronRight
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { triggerFortuneLight } from '../utils/lightEffects';
 import { getStorageWithTTL, setStorageWithTTL, removeStorage } from '../utils/storage';
 
 type PoeiResult = 'shua' | 'im' | 'yang' | null;
@@ -97,13 +97,8 @@ export const ThaiSiamsiPage: React.FC = () => {
     }
   };
 
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 80,
-      origin: { y: 0.6 },
-      colors: ['#dc2626', '#f59e0b', '#fbbf24', '#ffd700', '#f43f5e']
-    });
+  const triggerSiamsiLight = () => {
+    triggerFortuneLight('thai');
   };
 
   // Shake Bamboo Cylinder
@@ -148,7 +143,7 @@ export const ThaiSiamsiPage: React.FC = () => {
       if (result === 'shua') {
         const fortune = THAI_SIAMSI_FORTUNES.find((f) => f.number === fallenStick) || null;
         setConfirmedFortune(fortune);
-        triggerConfetti();
+        triggerSiamsiLight();
 
         if (fortune && fallenStick) {
           setStorageWithTTL<StoredThaiSiamsiResult>(THAI_SIAMSI_STORAGE_KEY, {
@@ -169,7 +164,7 @@ export const ThaiSiamsiPage: React.FC = () => {
     const fortune = THAI_SIAMSI_FORTUNES.find((f) => f.number === fallenStick) || null;
     setPoeiResult('shua');
     setConfirmedFortune(fortune);
-    triggerConfetti();
+    triggerSiamsiLight();
 
     if (fortune) {
       setStorageWithTTL<StoredThaiSiamsiResult>(THAI_SIAMSI_STORAGE_KEY, {

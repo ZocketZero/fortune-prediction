@@ -19,7 +19,7 @@ import {
   Dices,
   Layers
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { triggerMysticTarotLight } from '../utils/lightEffects';
 
 import { getStorageWithTTL, setStorageWithTTL, removeStorage } from '../utils/storage';
 
@@ -89,13 +89,8 @@ export const TarotReadingPage: React.FC = () => {
     shuffleDeck();
   }, []);
 
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 90,
-      spread: 75,
-      origin: { y: 0.6 },
-      colors: ['#f59e0b', '#c084fc', '#f472b6', '#38bdf8', '#fbbf24']
-    });
+  const triggerCardRevealLight = () => {
+    triggerMysticTarotLight();
   };
 
   // Switch timeframe handler
@@ -144,7 +139,7 @@ export const TarotReadingPage: React.FC = () => {
   const handleRevealCards = () => {
     if (selectedCardIds.length !== cardsToDrawCount || isShuffling) return;
     setIsRevealed(true);
-    triggerConfetti();
+    triggerCardRevealLight();
 
     // Persist result to localStorage with 1-day TTL
     setStorageWithTTL<StoredTarotResult>(TAROT_STORAGE_KEY, {
