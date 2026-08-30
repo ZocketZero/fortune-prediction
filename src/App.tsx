@@ -3,22 +3,46 @@ import { MainPage } from './components/MainPage';
 import { TarotReadingPage } from './components/TarotReadingPage';
 import { OmikujiPage } from './components/OmikujiPage';
 import { ThaiSiamsiPage } from './components/ThaiSiamsiPage';
+import { ThaiBlessingPage } from './components/ThaiBlessingPage';
+import { JapanBlessingPage } from './components/JapanBlessingPage';
 import { EncyclopediaPage } from './components/EncyclopediaPage';
 import {
   Sparkles,
   Compass,
   BookOpen,
-  Scroll
+  Scroll,
+  Flame,
+  Landmark
 } from 'lucide-react';
 
-export type AppTab = 'home' | 'reading' | 'omikuji' | 'thai_siamsi' | 'encyclopedia';
+export type AppTab =
+  | 'home'
+  | 'reading'
+  | 'omikuji'
+  | 'thai_siamsi'
+  | 'thai_blessing'
+  | 'japan_blessing'
+  | 'encyclopedia';
 
 export const App: React.FC = () => {
   // Read initial tab from URL hash if available
   const getTabFromHash = (): AppTab => {
     const hash = window.location.hash.replace('#/', '').replace('#', '');
-    if (hash === 'reading' || hash === 'omikuji' || hash === 'thai_siamsi' || hash === 'thai-siamsi' || hash === 'encyclopedia') {
-      return (hash === 'thai-siamsi' ? 'thai_siamsi' : hash) as AppTab;
+    if (
+      hash === 'reading' ||
+      hash === 'omikuji' ||
+      hash === 'thai_siamsi' ||
+      hash === 'thai-siamsi' ||
+      hash === 'thai_blessing' ||
+      hash === 'thai-blessing' ||
+      hash === 'japan_blessing' ||
+      hash === 'japan-blessing' ||
+      hash === 'encyclopedia'
+    ) {
+      if (hash === 'thai-siamsi') return 'thai_siamsi';
+      if (hash === 'thai-blessing') return 'thai_blessing';
+      if (hash === 'japan-blessing') return 'japan_blessing';
+      return hash as AppTab;
     }
     return 'home';
   };
@@ -53,7 +77,7 @@ export const App: React.FC = () => {
 
       {/* Premium Header */}
       <header className="relative z-20 border-b border-amber-500/30 bg-slate-950/85 backdrop-blur-2xl sticky top-0 shadow-2xl shadow-purple-950/80">
-        <div className="max-w-6xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-4 py-3.5 flex flex-col lg:flex-row items-center justify-between gap-4">
           <button
             onClick={() => navigateTo('home')}
             className="flex items-center gap-3.5 cursor-pointer bg-transparent border-0 text-left p-0"
@@ -67,12 +91,12 @@ export const App: React.FC = () => {
               <h1 className="text-xl sm:text-2xl font-extrabold gold-gradient-text m-0 tracking-tight font-cinzel-decorative">
                 ทำนายโชคชะตา
               </h1>
-              <p className="text-[11px] text-amber-200/70 m-0 font-medium">FORTUNE PREDICTION • ดูดวงไพ่ยิปซีและเซียมซีออนไลน์</p>
+              <p className="text-[11px] text-amber-200/70 m-0 font-medium">FORTUNE PREDICTION • ดูดวงไพ่ยิปซี เซียมซี และขอพรเทพเจ้า</p>
             </div>
           </button>
 
           {/* Navigation Tabs */}
-          <nav className="flex flex-wrap items-center bg-slate-900/90 p-1.5 rounded-2xl border border-amber-500/30 shadow-inner gap-1">
+          <nav className="flex flex-wrap items-center justify-center bg-slate-900/90 p-1.5 rounded-2xl border border-amber-500/30 shadow-inner gap-1">
             <button
               onClick={() => navigateTo('home')}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
@@ -114,8 +138,30 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
-              <Scroll className="w-4 h-4 text-amber-500" />
-              เซียมซีไทย ๒๘ ใบ
+              <Scroll className="w-4 h-4 text-amber-950" />
+              เซียมซีไทย
+            </button>
+            <button
+              onClick={() => navigateTo('thai_blessing')}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+                activeTab === 'thai_blessing'
+                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+              }`}
+            >
+              <Flame className="w-4 h-4 text-amber-400" />
+              ขอพรเทพไทย
+            </button>
+            <button
+              onClick={() => navigateTo('japan_blessing')}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+                activeTab === 'japan_blessing'
+                  ? 'bg-gradient-to-r from-rose-600 via-red-500 to-amber-600 text-white shadow-lg shadow-red-500/30 scale-[1.02]'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+              }`}
+            >
+              <Landmark className="w-4 h-4 text-rose-300" />
+              ขอพรเทพญี่ปุ่น
             </button>
             <button
               onClick={() => navigateTo('encyclopedia')}
@@ -126,7 +172,7 @@ export const App: React.FC = () => {
               }`}
             >
               <BookOpen className="w-4 h-4 text-purple-400" />
-              สารานุกรมไพ่
+              สารานุกรม
             </button>
           </nav>
         </div>
@@ -138,12 +184,14 @@ export const App: React.FC = () => {
         {activeTab === 'reading' && <TarotReadingPage />}
         {activeTab === 'omikuji' && <OmikujiPage />}
         {activeTab === 'thai_siamsi' && <ThaiSiamsiPage />}
+        {activeTab === 'thai_blessing' && <ThaiBlessingPage />}
+        {activeTab === 'japan_blessing' && <JapanBlessingPage />}
         {activeTab === 'encyclopedia' && <EncyclopediaPage />}
       </main>
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-purple-900/30 bg-slate-950/90 py-6 text-center text-xs text-purple-300/60 mt-auto">
-        <p>© 2026 ทำนายโชคชะตา (Fortune Prediction) • ดูดวงไพ่ยิปซีและเซียมซีเพื่อนำทางชีวิตด้วยสติและปัญญา</p>
+        <p>© 2026 ทำนายโชคชะตา (Fortune Prediction) • ดูดวงไพ่ยิปซี เซียมซี และขอพรเทพเจ้าเพื่อนำทางชีวิตด้วยสติและปัญญา</p>
       </footer>
     </div>
   );

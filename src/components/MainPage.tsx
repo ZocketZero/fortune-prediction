@@ -1,8 +1,9 @@
 import React from 'react';
-import { Compass, Scroll, BookOpen, ArrowRight } from 'lucide-react';
+import { Compass, Scroll, BookOpen, ArrowRight, Flame, Landmark } from 'lucide-react';
+import type { AppTab } from '../App';
 
 interface MainPageProps {
-  onNavigate: (tab: 'reading' | 'omikuji' | 'thai_siamsi' | 'encyclopedia') => void;
+  onNavigate: (tab: AppTab) => void;
 }
 
 const CARDS = [
@@ -31,6 +32,22 @@ const CARDS = [
     iconColor: 'text-yellow-400',
   },
   {
+    id: 'thai_blessing' as const,
+    icon: <Flame className="w-5 h-5" />,
+    title: 'ขอพรเทพเจ้าไทย',
+    desc: 'อธิษฐานจิต สวดคาถาบูชา พระพิฆเนศ ท้าวเวสสุวรรณ พระแม่ลักษมี ฯลฯ',
+    accent: 'border-orange-500/40 hover:border-orange-400/70',
+    iconColor: 'text-orange-400',
+  },
+  {
+    id: 'japan_blessing' as const,
+    icon: <Landmark className="w-5 h-5" />,
+    title: 'ขอพรเทพเจ้าญี่ปุ่น',
+    desc: 'เขียนแผ่นป้ายเอมะ (繪馬) สั่นกระดิ่งศาลเจ้า รับสาส์นพรมงคลชินโต',
+    accent: 'border-rose-500/40 hover:border-rose-400/70',
+    iconColor: 'text-rose-400',
+  },
+  {
     id: 'encyclopedia' as const,
     icon: <BookOpen className="w-5 h-5" />,
     title: 'สารานุกรมไพ่',
@@ -42,20 +59,20 @@ const CARDS = [
 
 export const MainPage: React.FC<MainPageProps> = ({ onNavigate }) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 gap-12">
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 gap-10">
       {/* Hero */}
       <div className="text-center space-y-4 max-w-lg">
-        <p className="text-xs text-slate-500 tracking-widest uppercase font-medium">Fortune Prediction</p>
+        <p className="text-xs text-slate-500 tracking-widest uppercase font-medium">Fortune Prediction & Deity Blessings</p>
         <h1 className="text-5xl sm:text-6xl font-black gold-gradient-text leading-tight">
           ทำนายโชคชะตา
         </h1>
         <p className="text-sm text-slate-400 leading-relaxed">
-          ตั้งจิตอธิษฐาน สงบใจ แล้วเลือกศาสตร์พยากรณ์ที่ดึงดูดใจคุณ
+          ตั้งจิตอธิษฐาน สงบใจ แล้วเลือกศาสตร์พยากรณ์หรือขอพรเทพเจ้าที่ดึงดูดใจคุณ
         </p>
       </div>
 
       {/* Navigation Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full max-w-4xl">
         {CARDS.map((card) => (
           <button
             key={card.id}
@@ -65,7 +82,7 @@ export const MainPage: React.FC<MainPageProps> = ({ onNavigate }) => {
             <span className={`shrink-0 ${card.iconColor}`}>{card.icon}</span>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-sm text-slate-100">{card.title}</p>
-              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{card.desc}</p>
+              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed line-clamp-2">{card.desc}</p>
             </div>
             <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all shrink-0" />
           </button>
