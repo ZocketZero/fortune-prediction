@@ -18,11 +18,75 @@ export const ThaiBlessingPage: React.FC = () => {
   const [userWish, setUserWish] = useState<string>('');
   const [selectedOffering, setSelectedOffering] = useState<string>('ธูปและพวงมาลัยดอกไม้สด');
   const [isPraying, setIsPraying] = useState<boolean>(false);
+  const [prayerStage, setPrayerStage] = useState<number>(1);
   const [blessingResult, setBlessingResult] = useState<WishRecord | null>(null);
   const [copiedMantra, setCopiedMantra] = useState<boolean>(false);
   const [copiedBlessing, setCopiedBlessing] = useState<boolean>(false);
 
   const selectedDeity = THAI_DEITIES.find((d) => d.id === selectedDeityId) || THAI_DEITIES[0];
+
+  // Web Audio Synthesizer for Sacred Singing Bowl / Temple Chime
+  const playSacredChime = () => {
+    try {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+
+      // Solfeggio sacred harmonics (528Hz & peaceful overtones)
+      const freqs = [528, 1056, 1584, 2112];
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        const initialGain = 0.16 / (idx + 1);
+        gain.gain.setValueAtTime(initialGain, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.2);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 3.3);
+      });
+    } catch {
+      // Ignore if audio context cannot be initialized
+    }
+  };
+
+  const triggerBlessingConfetti = () => {
+    try {
+      // Central golden aura shower
+      confetti({
+        particleCount: 80,
+        spread: 90,
+        origin: { y: 0.55 },
+        colors: ['#f59e0b', '#fbbf24', '#fef08a', '#f43f5e', '#a855f7', '#ffffff']
+      });
+      // Side burst canons
+      setTimeout(() => {
+        confetti({
+          particleCount: 45,
+          angle: 60,
+          spread: 60,
+          origin: { x: 0.05, y: 0.65 },
+          colors: ['#f59e0b', '#fbbf24', '#f43f5e', '#ffffff']
+        });
+        confetti({
+          particleCount: 45,
+          angle: 120,
+          spread: 60,
+          origin: { x: 0.95, y: 0.65 },
+          colors: ['#f59e0b', '#fbbf24', '#f43f5e', '#ffffff']
+        });
+      }, 300);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleCopyMantra = () => {
     navigator.clipboard.writeText(selectedDeity.mantra.full);
@@ -39,23 +103,25 @@ export const ThaiBlessingPage: React.FC = () => {
     if (!userWish.trim()) return;
 
     setIsPraying(true);
+    setPrayerStage(1);
+    playSacredChime();
 
     // Pick random blessing
     const randomBlessing =
       selectedDeity.blessings[Math.floor(Math.random() * selectedDeity.blessings.length)];
 
-    setTimeout(() => {
-      // Trigger golden confetti
-      try {
-        confetti({
-          particleCount: 70,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ['#f59e0b', '#fbbf24', '#f43f5e', '#a855f7', '#ffffff']
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    // Stage progression
+    const timer1 = setTimeout(() => {
+      setPrayerStage(2);
+    }, 900);
+
+    const timer2 = setTimeout(() => {
+      setPrayerStage(3);
+    }, 1800);
+
+    const timer3 = setTimeout(() => {
+      triggerBlessingConfetti();
+      playSacredChime();
 
       setBlessingResult({
         deity: selectedDeity,
@@ -73,8 +139,15 @@ export const ThaiBlessingPage: React.FC = () => {
       });
 
       setIsPraying(false);
+      setPrayerStage(1);
       window.scrollTo({ top: 100, behavior: 'smooth' });
-    }, 2200);
+    }, 2700);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   };
 
   const handleResetPrayer = () => {
@@ -92,7 +165,87 @@ export const ThaiBlessingPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 sm:space-y-8 animate-fadeIn pb-8 sm:pb-12">
+    <div className="w-full max-w-5xl mx-auto space-y-6 sm:space-y-8 animate-fadeIn pb-8 sm:pb-12 relative">
+      {/* Prayer Ritual Animation Overlay */}
+      {isPraying && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-xl animate-fadeIn">
+          {/* Rotating Heavenly Light Rays */}
+          <div
+            className="absolute top-1/2 left-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] pointer-events-none opacity-40 animate-rays-slow"
+            style={{
+              background:
+                'conic-gradient(from 0deg, transparent 0deg 20deg, rgba(245, 158, 11, 0.25) 30deg 50deg, transparent 60deg 80deg, rgba(245, 158, 11, 0.3) 90deg 110deg, transparent 120deg 140deg, rgba(245, 158, 11, 0.25) 150deg 170deg, transparent 180deg 200deg, rgba(245, 158, 11, 0.3) 210deg 230deg, transparent 240deg 260deg, rgba(245, 158, 11, 0.25) 270deg 290deg, transparent 300deg 320deg, rgba(245, 158, 11, 0.3) 330deg 350deg, transparent 360deg)'
+            }}
+          />
+
+          {/* Glowing Aura Spheres */}
+          <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-amber-500/20 blur-3xl animate-sacred-aura pointer-events-none" />
+          <div className="absolute w-48 h-48 sm:w-64 sm:h-64 rounded-full bg-rose-500/20 blur-2xl animate-pulse pointer-events-none" />
+
+          {/* Floating Sacred Sparkles */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute text-amber-300 animate-particle-up text-xs sm:text-sm"
+                style={{
+                  left: `${15 + (i * 7) % 70}%`,
+                  bottom: `${10 + (i * 12) % 40}%`,
+                  animationDelay: `${i * 0.35}s`,
+                  animationDuration: `${2.5 + (i % 3)}s`
+                }}
+              >
+                ✨
+              </div>
+            ))}
+          </div>
+
+          {/* Central Sacred Altar Box */}
+          <div className="relative z-10 max-w-md w-full p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-950/95 border-2 border-amber-400/60 shadow-2xl shadow-amber-500/30 text-center space-y-5">
+            {/* Deity Icon with Expanding Golden Rings */}
+            <div className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-2 border-amber-400/40 animate-ping opacity-60" />
+              <div className="absolute -inset-2 rounded-full border border-amber-400/30 animate-pulse" />
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 flex items-center justify-center text-4xl sm:text-5xl shadow-xl shadow-amber-500/40 text-slate-950">
+                {selectedDeity.avatarIcon}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                {selectedDeity.name}
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-amber-100">
+                กำลังน้อมส่งจิตอธิษฐาน
+              </h3>
+            </div>
+
+            {/* Prayer Progression Animation Steps */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-2">
+              <div className="flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-amber-300">
+                <Flame className="w-4 h-4 text-amber-400 animate-bounce" />
+                <span>
+                  {prayerStage === 1 && '๑. น้อมตั้งจิตบริสุทธิ์และถวายเครื่องสักการะ...'}
+                  {prayerStage === 2 && '๒. ส่งกระแสจิตอธิษฐานขึ้นสู่สรวงสวรรค์...'}
+                  {prayerStage === 3 && '๓. องค์เทพรับรู้จิตศรัทธาและประทานพรมงคล...'}
+                </span>
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-400 italic">
+                "{userWish.length > 50 ? userWish.slice(0, 50) + '...' : userWish}"
+              </p>
+            </div>
+
+            {/* Animated Progress Bar */}
+            <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-amber-500/30">
+              <div
+                className="bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 h-full rounded-full transition-all duration-700 ease-out shadow-sm"
+                style={{ width: `${(prayerStage / 3) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header Banner */}
       <div className="text-center space-y-2.5 sm:space-y-3 relative">
         <div className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] sm:text-xs font-semibold tracking-wide">
@@ -109,18 +262,33 @@ export const ThaiBlessingPage: React.FC = () => {
 
       {/* Result View or Prayer Form View */}
       {blessingResult ? (
-        <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto animate-fadeIn">
+        <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto anim-blessing-reveal relative">
+          {/* Background Rotating Aura Effect */}
+          <div
+            className="absolute top-1/2 left-1/2 w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] pointer-events-none opacity-20 animate-rays-slow"
+            style={{
+              background:
+                'conic-gradient(from 0deg, transparent 0deg 20deg, rgba(245, 158, 11, 0.4) 30deg 50deg, transparent 60deg 80deg, rgba(245, 158, 11, 0.4) 90deg 110deg, transparent 120deg 140deg, rgba(245, 158, 11, 0.4) 150deg 170deg, transparent 180deg 200deg, rgba(245, 158, 11, 0.4) 210deg 230deg, transparent 240deg 260deg, rgba(245, 158, 11, 0.4) 270deg 290deg, transparent 300deg 320deg, rgba(245, 158, 11, 0.4) 330deg 350deg, transparent 360deg)'
+            }}
+          />
+
           {/* Card: Sacred Blessing Result */}
-          <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-8 sm:p-10 border border-amber-500/40 bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-950/95 shadow-2xl shadow-amber-500/10 backdrop-blur-xl overflow-hidden">
+          <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-8 sm:p-10 border-2 border-amber-500/50 bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-950/95 shadow-2xl shadow-amber-500/20 backdrop-blur-xl overflow-hidden">
+            {/* Shimmer Light Sweep */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent pointer-events-none anim-divine-shimmer" />
+
             {/* Background Aura */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
 
             {/* Top Deity Badge */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-amber-500/20 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-amber-500/20 text-center sm:text-left relative">
               <div className="flex items-center gap-3.5">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl sm:text-3xl shadow-lg shadow-amber-500/30 shrink-0">
-                  {blessingResult.deity.avatarIcon}
+                <div className="relative">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 flex items-center justify-center text-2xl sm:text-3xl shadow-lg shadow-amber-500/30 shrink-0">
+                    {blessingResult.deity.avatarIcon}
+                  </div>
+                  <div className="absolute -inset-1 rounded-2xl border border-amber-400/40 animate-pulse pointer-events-none" />
                 </div>
                 <div>
                   <div className="flex items-center justify-center sm:justify-start gap-2">
@@ -156,7 +324,14 @@ export const ThaiBlessingPage: React.FC = () => {
               </div>
 
               {/* Divine Blessing Box */}
-              <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500/15 via-purple-900/20 to-slate-900/90 border border-amber-500/40 text-center space-y-2.5 sm:space-y-3 shadow-inner">
+              <div className="relative p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500/15 via-purple-900/20 to-slate-900/90 border border-amber-500/40 text-center space-y-2.5 sm:space-y-3 shadow-inner overflow-hidden">
+                {/* Thai Sacred Seal Stamp Animation */}
+                <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-amber-400/80 bg-amber-950/70 backdrop-blur-sm flex flex-col items-center justify-center text-amber-300 font-bold text-[8px] sm:text-[9px] select-none anim-thai-seal-stamp shadow-lg shadow-amber-500/30">
+                  <Sparkles className="w-3 h-3 text-amber-300 mb-0.5" />
+                  <span>สัมฤทธิ์ผล</span>
+                  <span className="text-[7px] text-amber-400/80">สาธุ 🙏</span>
+                </div>
+
                 <div className="inline-flex items-center gap-1.5 text-xs text-amber-300 uppercase tracking-widest font-bold">
                   <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                   สาส์นพรและมนตรานำทาง
@@ -235,6 +410,7 @@ export const ThaiBlessingPage: React.FC = () => {
           </div>
         </div>
       ) : (
+
         /* Prayer Selection and Form */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left Column: Deity Selector */}

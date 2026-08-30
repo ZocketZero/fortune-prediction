@@ -18,12 +18,75 @@ export const JapanBlessingPage: React.FC = () => {
   const [userWish, setUserWish] = useState<string>('');
   const [selectedEmaPatternId, setSelectedEmaPatternId] = useState<string>(JAPAN_DEITIES[0].emaPatterns[0].id);
   const [isRingingBell, setIsRingingBell] = useState<boolean>(false);
+  const [prayerStage, setPrayerStage] = useState<number>(1);
   const [blessingResult, setBlessingResult] = useState<EmaWishRecord | null>(null);
   const [copiedBlessing, setCopiedBlessing] = useState<boolean>(false);
 
   const selectedDeity = JAPAN_DEITIES.find((d) => d.id === selectedDeityId) || JAPAN_DEITIES[0];
   const selectedEmaPattern =
     selectedDeity.emaPatterns.find((p) => p.id === selectedEmaPatternId) || selectedDeity.emaPatterns[0];
+
+  // Web Audio Synthesizer for Shinto Suzu Shrine Bell (本坪鈴)
+  const playShintoSuzuBell = () => {
+    try {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+
+      // Shinto shrine bell multi-harmonic metallic ring
+      [0, 0.25, 0.55].forEach((delay) => {
+        [1320, 1760, 2640, 3520].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+
+          const initialGain = 0.12 / (idx + 1);
+          gain.gain.setValueAtTime(initialGain, ctx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 1.2);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + delay);
+          osc.stop(ctx.currentTime + delay + 1.3);
+        });
+      });
+    } catch {
+      // Ignore audio error if unsupported
+    }
+  };
+
+  const triggerSakuraConfetti = () => {
+    try {
+      confetti({
+        particleCount: 75,
+        spread: 85,
+        origin: { y: 0.55 },
+        colors: ['#ef4444', '#f43f5e', '#fbbf24', '#fecdd3', '#ffffff', '#fda4af']
+      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 40,
+          angle: 60,
+          spread: 60,
+          origin: { x: 0.08, y: 0.6 },
+          colors: ['#f43f5e', '#fda4af', '#fbbf24', '#ffffff']
+        });
+        confetti({
+          particleCount: 40,
+          angle: 120,
+          spread: 60,
+          origin: { x: 0.92, y: 0.6 },
+          colors: ['#f43f5e', '#fda4af', '#fbbf24', '#ffffff']
+        });
+      }, 300);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSelectDeity = (deity: JapanDeity) => {
     setSelectedDeityId(deity.id);
@@ -39,22 +102,24 @@ export const JapanBlessingPage: React.FC = () => {
     if (!userWish.trim()) return;
 
     setIsRingingBell(true);
+    setPrayerStage(1);
+    playShintoSuzuBell();
 
     const randomBlessing =
       selectedDeity.blessings[Math.floor(Math.random() * selectedDeity.blessings.length)];
 
-    setTimeout(() => {
-      // Trigger sakura and gold sparks
-      try {
-        confetti({
-          particleCount: 65,
-          spread: 75,
-          origin: { y: 0.6 },
-          colors: ['#ef4444', '#f43f5e', '#fbbf24', '#fecdd3', '#ffffff']
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    // Stage progression: 2 bows & bell -> 2 claps -> 1 bow & hang Ema
+    const timer1 = setTimeout(() => {
+      setPrayerStage(2);
+    }, 900);
+
+    const timer2 = setTimeout(() => {
+      setPrayerStage(3);
+    }, 1800);
+
+    const timer3 = setTimeout(() => {
+      triggerSakuraConfetti();
+      playShintoSuzuBell();
 
       setBlessingResult({
         deity: selectedDeity,
@@ -70,8 +135,15 @@ export const JapanBlessingPage: React.FC = () => {
       });
 
       setIsRingingBell(false);
+      setPrayerStage(1);
       window.scrollTo({ top: 100, behavior: 'smooth' });
-    }, 2200);
+    }, 2700);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   };
 
   const handleReset = () => {
@@ -89,7 +161,78 @@ export const JapanBlessingPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 sm:space-y-8 animate-fadeIn pb-8 sm:pb-12">
+    <div className="w-full max-w-5xl mx-auto space-y-6 sm:space-y-8 animate-fadeIn pb-8 sm:pb-12 relative">
+      {/* Shinto Shrine Prayer Ritual Overlay */}
+      {isRingingBell && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-xl animate-fadeIn">
+          {/* Torii Gate & Crimson Radiance Background */}
+          <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-red-600/20 blur-3xl animate-sacred-aura pointer-events-none" />
+          <div className="absolute w-56 h-56 sm:w-80 sm:h-80 rounded-full bg-amber-500/15 blur-2xl animate-pulse pointer-events-none" />
+
+          {/* Falling Sakura Petals Animation */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(14)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute text-rose-300 anim-sakura-petal text-sm sm:text-base select-none"
+                style={{
+                  left: `${10 + (i * 6.5) % 80}%`,
+                  top: `${(i * 7) % 60}%`,
+                  animationDelay: `${i * 0.4}s`,
+                  animationDuration: `${3.5 + (i % 3)}s`
+                }}
+              >
+                🌸
+              </div>
+            ))}
+          </div>
+
+          {/* Central Shrine Prayer Box */}
+          <div className="relative z-10 max-w-md w-full p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-[#22130e]/95 via-slate-950/95 to-slate-950/95 border-2 border-red-500/60 shadow-2xl shadow-red-950/80 text-center space-y-5">
+            {/* Swinging Shrine Bell with Red/White Rope */}
+            <div className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 flex flex-col items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-2 border-red-500/40 animate-ping opacity-50" />
+              <div className="w-1.5 h-6 bg-gradient-to-b from-red-600 to-amber-200 rounded-full bell-swinging" />
+              <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-red-600 flex items-center justify-center text-3xl sm:text-4xl shadow-xl shadow-red-600/40 text-white bell-swinging">
+                🔔
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <span className="text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full bg-red-500/20 text-rose-300 border border-red-500/30">
+                ⛩️ {selectedDeity.name} ({selectedDeity.japaneseName})
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-rose-100 mt-1">
+                กำลังประกอบพิธีขอพรศาลเจ้า
+              </h3>
+            </div>
+
+            {/* Shinto Shrine Etiquette (二礼二拍手一礼) */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border border-red-500/30 space-y-2">
+              <div className="flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-rose-200">
+                <Bell className="w-4 h-4 text-amber-400 animate-bounce" />
+                <span>
+                  {prayerStage === 1 && '๑. 二礼 (คำนับ ๒ ครั้ง และสั่นกระดิ่งศาลเจ้า)...'}
+                  {prayerStage === 2 && '๒. 二拍手 (ปรบมือ ๒ ครั้ง น้อมส่งจิตอธิษฐาน)...'}
+                  {prayerStage === 3 && '๓. 一礼 (คำนับ ๑ ครั้ง และแขวนแผ่นป้ายเอมะ)...'}
+                </span>
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-400 italic">
+                "{userWish.length > 50 ? userWish.slice(0, 50) + '...' : userWish}"
+              </p>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-red-500/30">
+              <div
+                className="bg-gradient-to-r from-red-600 via-rose-500 to-amber-500 h-full rounded-full transition-all duration-700 ease-out shadow-sm"
+                style={{ width: `${(prayerStage / 3) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header Banner */}
       <div className="text-center space-y-2.5 sm:space-y-3 relative">
         <div className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-rose-300 text-[11px] sm:text-xs font-semibold tracking-wide">
@@ -106,9 +249,12 @@ export const JapanBlessingPage: React.FC = () => {
 
       {/* Result View or Ema Prayer Board View */}
       {blessingResult ? (
-        <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto animate-fadeIn">
+        <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto anim-blessing-reveal relative">
           {/* Ema Wooden Board Display */}
-          <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-8 sm:p-10 border-2 border-amber-600/40 bg-gradient-to-b from-[#2a1a12]/95 via-[#1a120e]/95 to-slate-950/95 shadow-2xl shadow-red-950/50 backdrop-blur-xl overflow-hidden">
+          <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-8 sm:p-10 border-2 border-amber-600/50 bg-gradient-to-b from-[#2a1a12]/95 via-[#1a120e]/95 to-slate-950/95 shadow-2xl shadow-red-950/50 backdrop-blur-xl overflow-hidden anim-ema-hang">
+            {/* Shimmer Light Sweep */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-rose-400/10 to-transparent pointer-events-none anim-divine-shimmer" />
+
             {/* Top Wooden Hole with Red Ribbon */}
             <div className="flex flex-col items-center mb-4 sm:mb-6">
               <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-slate-950 border-2 border-amber-500 shadow-inner flex items-center justify-center">
@@ -118,10 +264,13 @@ export const JapanBlessingPage: React.FC = () => {
             </div>
 
             {/* Ema Board Header */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-amber-700/30 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-amber-700/30 text-center sm:text-left relative">
               <div className="flex items-center gap-3.5">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-2xl sm:text-3xl shadow-lg shadow-red-600/30 text-white shrink-0">
-                  {blessingResult.emaPattern.icon}
+                <div className="relative">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-2xl sm:text-3xl shadow-lg shadow-red-600/30 text-white shrink-0">
+                    {blessingResult.emaPattern.icon}
+                  </div>
+                  <div className="absolute -inset-1 rounded-2xl border border-red-500/40 animate-pulse pointer-events-none" />
                 </div>
                 <div>
                   <div className="flex items-center justify-center sm:justify-start gap-2">
@@ -145,9 +294,9 @@ export const JapanBlessingPage: React.FC = () => {
 
             {/* Ema Inscribed Prayer */}
             <div className="my-4 sm:my-6 space-y-3 sm:space-y-4">
-              <div className="relative p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-[#fffdfa]/95 text-slate-900 shadow-xl border-2 sm:border-4 border-[#b45309]/30">
-                {/* Traditional Shrine Seal Mark */}
-                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 border-red-600/80 flex items-center justify-center text-red-600 font-bold text-[10px] sm:text-xs rotate-[-12deg] select-none opacity-80 pointer-events-none">
+              <div className="relative p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-[#fffdfa]/95 text-slate-900 shadow-xl border-2 sm:border-4 border-[#b45309]/30 overflow-hidden">
+                {/* Traditional Shrine Seal Mark with Stamp Animation */}
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 sm:border-3 border-red-600/90 bg-red-50/70 flex items-center justify-center text-red-600 font-black text-xs sm:text-sm select-none pointer-events-none anim-seal-stamp shadow-md shadow-red-600/30">
                   心願成就
                 </div>
 
@@ -156,7 +305,7 @@ export const JapanBlessingPage: React.FC = () => {
                   <span>ป้ายเอมะลาย: {blessingResult.emaPattern.name}</span>
                 </div>
 
-                <p className="text-base sm:text-xl font-bold text-slate-800 leading-relaxed my-2 sm:my-3 font-sans">
+                <p className="text-base sm:text-xl font-bold text-slate-800 leading-relaxed my-2 sm:my-3 font-sans pr-12">
                   "{blessingResult.userWish}"
                 </p>
 
@@ -167,7 +316,7 @@ export const JapanBlessingPage: React.FC = () => {
               </div>
 
               {/* Shrine Divine Blessing (สาส์นพรจากเทพเจ้า) */}
-              <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-red-950/40 via-slate-900/90 to-slate-950/90 border border-red-500/40 text-center space-y-2.5 sm:space-y-3 shadow-inner">
+              <div className="relative p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-red-950/40 via-slate-900/90 to-slate-950/90 border border-red-500/40 text-center space-y-2.5 sm:space-y-3 shadow-inner overflow-hidden">
                 <div className="inline-flex items-center gap-1.5 text-xs text-rose-300 uppercase tracking-widest font-bold">
                   <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                   สาส์นพรเทพเจ้าประจำศาลเจ้า (神徳)

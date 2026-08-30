@@ -291,6 +291,190 @@
   animation: tieSlip 0.6s ease-out forwards;
 }
 
+/* Sacred Prayer Light Rays Rotation */
+@keyframes rotateRays {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.animate-rays-slow {
+  animation: rotateRays 25s linear infinite;
+}
+
+/* Sacred Blessing Aura Pulse */
+@keyframes sacredAuraPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+.animate-sacred-aura {
+  animation: sacredAuraPulse 3.5s ease-in-out infinite;
+}
+
+/* Sacred Seal Stamp Impact */
+@keyframes sealStampAnim {
+  0% {
+    transform: scale(2.8) rotate(-20deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 0px transparent);
+  }
+  65% {
+    transform: scale(0.92) rotate(-10deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.9));
+  }
+  80% {
+    transform: scale(1.05) rotate(-13deg);
+  }
+  100% {
+    transform: scale(1) rotate(-12deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4));
+  }
+}
+
+.anim-seal-stamp {
+  animation: sealStampAnim 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+}
+
+/* Thai Golden Blessing Seal Impact */
+@keyframes thaiSealStampAnim {
+  0% {
+    transform: scale(2.8) rotate(15deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 0px transparent);
+  }
+  65% {
+    transform: scale(0.92) rotate(2deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.9));
+  }
+  80% {
+    transform: scale(1.05) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(4deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));
+  }
+}
+
+.anim-thai-seal-stamp {
+  animation: thaiSealStampAnim 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+}
+
+/* Ema Plaque Hanging Sway */
+@keyframes emaHangSway {
+  0% {
+    transform: rotate(0deg) translateY(-20px) scale(0.92);
+    opacity: 0;
+  }
+  30% {
+    transform: rotate(5deg) translateY(0) scale(1.02);
+    opacity: 1;
+  }
+  55% {
+    transform: rotate(-3.5deg) translateY(0);
+  }
+  75% {
+    transform: rotate(2deg) translateY(0);
+  }
+  90% {
+    transform: rotate(-1deg) translateY(0);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.anim-ema-hang {
+  animation: emaHangSway 1.1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transform-origin: top center;
+}
+
+/* Floating Particles (Sparks / Flowers) */
+@keyframes floatParticleUp {
+  0% {
+    transform: translateY(100%) scale(0.5);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-200%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.animate-particle-up {
+  animation: floatParticleUp 4s ease-in-out infinite;
+}
+
+/* Sakura Petal Drift */
+@keyframes sakuraDriftAnim {
+  0% {
+    transform: translate(0, -10px) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(40px, 120px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.anim-sakura-petal {
+  animation: sakuraDriftAnim 5s linear infinite;
+}
+
+/* Blessing Card Revelation Entrance */
+@keyframes blessingCardReveal {
+  0% {
+    transform: scale(0.92) translateY(30px);
+    opacity: 0;
+    filter: blur(8px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.anim-blessing-reveal {
+  animation: blessingCardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Golden Card Shine Sweep */
+@keyframes divineShimmerSweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  50%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.anim-divine-shimmer {
+  animation: divineShimmerSweep 4.5s ease-in-out infinite;
+}
+
 
 
 
