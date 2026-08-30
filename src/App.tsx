@@ -6,14 +6,7 @@ import { ThaiSiamsiPage } from './components/ThaiSiamsiPage';
 import { ThaiBlessingPage } from './components/ThaiBlessingPage';
 import { JapanBlessingPage } from './components/JapanBlessingPage';
 import { EncyclopediaPage } from './components/EncyclopediaPage';
-import {
-  Sparkles,
-  Compass,
-  BookOpen,
-  Scroll,
-  Flame,
-  Landmark
-} from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export type AppTab =
   | 'home'
@@ -95,85 +88,27 @@ export const App: React.FC = () => {
             </div>
           </button>
 
-          {/* Navigation Tabs */}
-          <nav className="flex flex-wrap items-center justify-center bg-slate-900/90 p-1.5 rounded-2xl border border-amber-500/30 shadow-inner gap-1">
-            <button
-              onClick={() => navigateTo('home')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                activeTab === 'home'
-                  ? 'bg-gradient-to-r from-purple-700 via-violet-600 to-indigo-700 text-white shadow-lg shadow-purple-500/30 scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <Sparkles className="w-4 h-4 text-purple-300" />
-              หน้าหลัก
-            </button>
-            <button
-              onClick={() => navigateTo('reading')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                activeTab === 'reading'
-                  ? 'bg-gradient-to-r from-amber-600 via-amber-500 to-purple-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <Compass className="w-4 h-4 text-amber-950" />
-              ไพ่ยิปซี
-            </button>
-            <button
-              onClick={() => navigateTo('omikuji')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                activeTab === 'omikuji'
-                  ? 'bg-gradient-to-r from-orange-600 via-red-500 to-rose-600 text-white shadow-lg shadow-orange-500/30 scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <span>⛩️</span>
-              เซียมซีญี่ปุ่น
-            </button>
-            <button
-              onClick={() => navigateTo('thai_siamsi')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                activeTab === 'thai_siamsi'
-                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <Scroll className="w-4 h-4 text-amber-950" />
-              เซียมซีไทย
-            </button>
-            <button
-              onClick={() => navigateTo('thai_blessing')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                activeTab === 'thai_blessing'
-                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <Flame className="w-4 h-4 text-amber-400" />
-              ขอพรเทพไทย
-            </button>
-            <button
-              onClick={() => navigateTo('japan_blessing')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                activeTab === 'japan_blessing'
-                  ? 'bg-gradient-to-r from-rose-600 via-red-500 to-amber-600 text-white shadow-lg shadow-red-500/30 scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <Landmark className="w-4 h-4 text-rose-300" />
-              ขอพรเทพญี่ปุ่น
-            </button>
-            <button
-              onClick={() => navigateTo('encyclopedia')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                activeTab === 'encyclopedia'
-                  ? 'bg-gradient-to-r from-amber-600 via-amber-500 to-purple-600 text-slate-950 shadow-lg shadow-amber-500/30 scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <BookOpen className="w-4 h-4 text-purple-400" />
-              สารานุกรม
-            </button>
+          {/* Navigation Dropdown */}
+          <nav className="relative">
+            <div className="relative inline-flex items-center">
+              <select
+                value={activeTab}
+                onChange={(e) => navigateTo(e.target.value as AppTab)}
+                className="appearance-none bg-slate-900/90 border border-amber-500/30 text-slate-200 text-sm font-bold rounded-2xl px-4 py-2.5 pr-10 shadow-inner cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/60 transition-all duration-200 hover:border-amber-500/60 hover:bg-slate-800/90"
+              >
+                <option value="home">✨ หน้าหลัก</option>
+                <option value="reading">🧭 ไพ่ยิปซี</option>
+                <option value="omikuji">⛩️ เซียมซีญี่ปุ่น</option>
+                <option value="thai_siamsi">📜 เซียมซีไทย</option>
+                <option value="thai_blessing">🔥 ขอพรเทพไทย</option>
+                <option value="japan_blessing">🏛️ ขอพรเทพญี่ปุ่น</option>
+                <option value="encyclopedia">📖 สารานุกรม</option>
+              </select>
+              {/* Custom chevron */}
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-amber-400">
+                ▾
+              </span>
+            </div>
           </nav>
         </div>
       </header>
