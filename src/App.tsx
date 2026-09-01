@@ -5,6 +5,7 @@ import { OmikujiPage } from './components/OmikujiPage';
 import { ThaiSiamsiPage } from './components/ThaiSiamsiPage';
 import { ThaiBlessingPage } from './components/ThaiBlessingPage';
 import { JapanBlessingPage } from './components/JapanBlessingPage';
+import { GodBlessingPage } from './components/GodBlessingPage';
 import { EncyclopediaPage } from './components/EncyclopediaPage';
 import { Sparkles } from 'lucide-react';
 
@@ -15,6 +16,7 @@ export type AppTab =
   | 'thai_siamsi'
   | 'thai_blessing'
   | 'japan_blessing'
+  | 'god_blessing'
   | 'encyclopedia';
 
 export const App: React.FC = () => {
@@ -30,11 +32,14 @@ export const App: React.FC = () => {
       hash === 'thai-blessing' ||
       hash === 'japan_blessing' ||
       hash === 'japan-blessing' ||
+      hash === 'god_blessing' ||
+      hash === 'god-blessing' ||
       hash === 'encyclopedia'
     ) {
       if (hash === 'thai-siamsi') return 'thai_siamsi';
       if (hash === 'thai-blessing') return 'thai_blessing';
       if (hash === 'japan-blessing') return 'japan_blessing';
+      if (hash === 'god-blessing') return 'god_blessing';
       return hash as AppTab;
     }
     return 'home';
@@ -105,6 +110,7 @@ export const App: React.FC = () => {
                 <option value="thai_siamsi">📜 เซียมซีไทย ๒๘ ใบ</option>
                 <option value="thai_blessing">🔥 ขอพรเทพเจ้าไทย</option>
                 <option value="japan_blessing">🏛️ ขอพรเทพเจ้าญี่ปุ่น (絵馬)</option>
+                <option value="god_blessing">✝️ ขอพรพระเจ้า (Prayer)</option>
                 <option value="encyclopedia">📖 สารานุกรมไพ่ยิปซี</option>
               </select>
               {/* Custom chevron */}
@@ -124,6 +130,7 @@ export const App: React.FC = () => {
         {activeTab === 'thai_siamsi' && <ThaiSiamsiPage />}
         {activeTab === 'thai_blessing' && <ThaiBlessingPage />}
         {activeTab === 'japan_blessing' && <JapanBlessingPage />}
+        {activeTab === 'god_blessing' && <GodBlessingPage />}
         {activeTab === 'encyclopedia' && <EncyclopediaPage />}
       </main>
 

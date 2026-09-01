@@ -48,6 +48,14 @@ const CARDS = [
     iconColor: 'text-rose-400',
   },
   {
+    id: 'god_blessing' as const,
+    icon: <span className="text-lg leading-none">✝️</span>,
+    title: 'ขอพรพระเจ้า',
+    desc: 'จุดเทียนอธิษฐานศักดิ์สิทธิ์ สวดบทข้าแต่พระบิดา รับพระพรแห่งพระสัญญา',
+    accent: 'border-amber-400/50 hover:border-amber-300/80',
+    iconColor: 'text-amber-300',
+  },
+  {
     id: 'encyclopedia' as const,
     icon: <BookOpen className="w-5 h-5" />,
     title: 'สารานุกรมไพ่',
