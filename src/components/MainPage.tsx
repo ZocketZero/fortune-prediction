@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Scroll, BookOpen, ArrowRight, Flame, Landmark } from 'lucide-react';
+import { Compass, Scroll, BookOpen, ArrowRight, Flame, Landmark, Calendar } from 'lucide-react';
 import type { AppTab } from '../App';
 
 interface MainPageProps {
@@ -14,6 +14,14 @@ const CARDS = [
     desc: 'ทำนายดวงด้วย Major Arcana 22 ใบ รายวัน รายเดือน รายปี',
     accent: 'border-amber-500/40 hover:border-amber-400/70',
     iconColor: 'text-amber-400',
+  },
+  {
+    id: 'birth_fortune' as const,
+    icon: <Calendar className="w-5 h-5" />,
+    title: 'ดูดวงวันเดือนปีเกิด',
+    desc: 'ถอดรหัสชะตาชีวิต ๑๒ นักษัตร จักรราศี เลขศาสตร์ และสีมงคล',
+    accent: 'border-purple-500/40 hover:border-purple-400/70',
+    iconColor: 'text-purple-400',
   },
   {
     id: 'omikuji' as const,
