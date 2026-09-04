@@ -33,6 +33,9 @@ import type {
   LifePathNumberFortune,
   BirthTimeFortune
 } from '../data/birthFortuneData';
+import { getBloodTypeFortune } from '../data/bloodTypeData';
+import type { BloodType } from '../data/bloodTypeData';
+import type { AppTab } from '../App';
 import { triggerMysticTarotLight } from '../utils/lightEffects';
 import { getStorageWithTTL, setStorageWithTTL, removeStorage } from '../utils/storage';
 
@@ -44,9 +47,14 @@ interface SavedBirthData {
   yearCE: number;
   birthTime?: string;
   isNightBornWednesday?: boolean;
+  bloodType?: BloodType;
 }
 
-export const BirthFortunePage: React.FC = () => {
+interface BirthFortunePageProps {
+  onNavigate?: (tab: AppTab) => void;
+}
+
+export const BirthFortunePage: React.FC<BirthFortunePageProps> = ({ onNavigate }) => {
   // Read saved data if available
   const initialSaved = getStorageWithTTL<SavedBirthData>(BIRTH_STORAGE_KEY);
 
@@ -58,6 +66,7 @@ export const BirthFortunePage: React.FC = () => {
   const [birthMonth, setBirthMonth] = useState<number>(() => initialSaved?.month || 8);
   const [birthYearCE, setBirthYearCE] = useState<number>(() => initialSaved?.yearCE || 1998);
   const [birthTime, setBirthTime] = useState<string>(() => initialSaved?.birthTime || '');
+  const [bloodType, setBloodType] = useState<BloodType | ''>(() => initialSaved?.bloodType || '');
   const [isWednesdayNight, setIsWednesdayNight] = useState<boolean>(() => initialSaved?.isNightBornWednesday || false);
 
   // Active Tab within the Fortune Result
@@ -117,7 +126,8 @@ export const BirthFortunePage: React.FC = () => {
         month: birthMonth,
         yearCE: birthYearCE,
         birthTime: birthTime || undefined,
-        isNightBornWednesday: isWednesdayNight
+        isNightBornWednesday: isWednesdayNight,
+        bloodType: bloodType || undefined
       }, 7 * 24 * 60 * 60 * 1000); // 7 days
     }, 600);
   };
@@ -128,15 +138,20 @@ export const BirthFortunePage: React.FC = () => {
   };
 
   const handleCopySummary = () => {
-    const textToCopy = `✨ ผลทำนายดวงชะตาจากวันเดือนปีเกิด ✨
+    let textToCopy = `✨ ผลทำนายดวงชะตาจากวันเดือนปีเกิด ✨
 📅 เกิดวันที่ ${birthDay} ${THAI_MONTHS[birthMonth - 1].name.split(' ')[0]} พ.ศ. ${birthYearCE + 543} (ค.ศ. ${birthYearCE})
 🌟 ${dayFortune.thaiName} (${dayFortune.rulingPlanet}) | ${dayFortune.element}
 ☸️ พระประจำวันเกิด: ${dayFortune.buddhaName} (${dayFortune.buddhaPosture})
 ♈ ${zodiacFortune.thaiName} (${zodiacFortune.name}) | ธาตุ${zodiacFortune.element}
 🐉 ${animalFortune.thaiName} (${animalFortune.animal}) | ${yearElement}
-🔢 เลขศาสตร์รหัสชีวิต: ${lifePathFortune.title}
+🔢 เลขศาสตร์รหัสชีวิต: ${lifePathFortune.title}\n`;
 
-💡 คำคมประจำดวงชะตา: "${dayFortune.summaryQuote}"
+    if (bloodType) {
+      const bFortune = getBloodTypeFortune(bloodType);
+      textToCopy += `🩸 กรุ๊ปเลือด: ${bFortune.thaiTitle} - ${bFortune.archetype}\n`;
+    }
+
+    textToCopy += `\n💡 คำคมประจำดวงชะตา: "${dayFortune.summaryQuote}"
 🎨 สีมงคลการงาน: ${dayFortune.luckyColors.work.join(', ')}
 💰 สีมงคลการเงิน: ${dayFortune.luckyColors.wealth.join(', ')}
 ❤️ สีมงคลความรัก: ${dayFortune.luckyColors.love.join(', ')}
@@ -267,6 +282,33 @@ export const BirthFortunePage: React.FC = () => {
                 aria-label="เลือกเวลาเกิด"
                 className="w-full bg-slate-900/90 border border-amber-500/30 text-slate-100 text-sm font-semibold rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50 hover:border-amber-400/60 transition-all"
               />
+            </div>
+
+            {/* Blood Type (Optional) */}
+            <div className="space-y-1.5 sm:col-span-3 lg:col-span-4">
+              <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <span className="text-rose-400">🩸</span>
+                  <span>กรุ๊ปเลือด (Blood Type)</span>
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">ระบุเพื่อเปิดเผยบุคลิก & เคมีคู่แท้</span>
+              </label>
+              <div className="grid grid-cols-5 gap-2">
+                {(['', 'A', 'B', 'O', 'AB'] as (BloodType | '')[]).map((type) => (
+                  <button
+                    key={type || 'none'}
+                    type="button"
+                    onClick={() => setBloodType(type)}
+                    className={`py-2 px-2 rounded-xl text-xs sm:text-sm font-bold border transition-all cursor-pointer text-center ${
+                      bloodType === type
+                        ? 'bg-rose-600/30 border-rose-400 text-rose-200 shadow-md shadow-rose-600/20'
+                        : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                    }`}
+                  >
+                    {type ? `กรุ๊ป ${type}` : 'ไม่ระบุ'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -403,6 +445,35 @@ export const BirthFortunePage: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Optional Blood Type Banner */}
+            {bloodType && (() => {
+              const bFortune = getBloodTypeFortune(bloodType);
+              return (
+                <div className="mt-4 p-4 rounded-2xl bg-rose-950/30 border border-rose-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 font-black text-base flex items-center justify-center shrink-0">
+                      {bloodType}
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <strong className="text-rose-300">{bFortune.thaiTitle}:</strong>
+                        <span className="text-slate-200 font-semibold">{bFortune.archetype}</span>
+                      </div>
+                      <p className="text-slate-300 text-xs mt-0.5">{bFortune.tagline}</p>
+                    </div>
+                  </div>
+                  {onNavigate && (
+                    <button
+                      onClick={() => onNavigate('blood_fortune')}
+                      className="px-3 py-1.5 rounded-xl bg-rose-600/30 hover:bg-rose-600/50 border border-rose-500/50 text-rose-200 text-xs font-bold transition-all cursor-pointer shrink-0"
+                    >
+                      ดูคำทำนายกรุ๊ปเลือด & ตรวจเคมีคู่แท้ →
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Optional Birth Time Banner */}
             {timePeriodFortune && (

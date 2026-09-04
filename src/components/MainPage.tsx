@@ -24,6 +24,14 @@ const CARDS = [
     iconColor: 'text-purple-400',
   },
   {
+    id: 'blood_fortune' as const,
+    icon: <span className="text-lg leading-none">🩸</span>,
+    title: 'ทำนายตามกรุ๊ปเลือด',
+    desc: 'ถอดรหัสบุคลิกภาพ จิตวิทยาความรัก การงาน สุขภาพ และเคมีคู่แท้ (A, B, O, AB)',
+    accent: 'border-rose-500/40 hover:border-rose-400/70',
+    iconColor: 'text-rose-400',
+  },
+  {
     id: 'omikuji' as const,
     icon: <span className="text-lg leading-none">⛩️</span>,
     title: 'เซียมซีญี่ปุ่น',

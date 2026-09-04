@@ -80,9 +80,6 @@ export const JapanBlessingPage: React.FC = () => {
     setPrayerStage(1);
     playShintoSuzuBell();
 
-    const randomBlessing =
-      selectedDeity.blessings[Math.floor(Math.random() * selectedDeity.blessings.length)];
-
     // Stage progression: 2 bows & bell -> 2 claps -> 1 bow & hang Ema
     const timer1 = setTimeout(() => {
       setPrayerStage(2);
@@ -95,6 +92,9 @@ export const JapanBlessingPage: React.FC = () => {
     const timer3 = setTimeout(() => {
       triggerSakuraBlessingLight();
       playShintoSuzuBell();
+
+      const blessings = selectedDeity.blessings;
+      const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
 
       setBlessingResult({
         deity: selectedDeity,

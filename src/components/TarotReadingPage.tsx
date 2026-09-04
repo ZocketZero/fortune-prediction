@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { TAROT_CARDS } from '../data/tarotCards';
 import type { TarotCard, CardInterpretation } from '../data/tarotCards';
 import {
@@ -62,7 +62,7 @@ export const TarotReadingPage: React.FC = () => {
   });
 
   // Deck State
-  const [deck, setDeck] = useState<TarotCard[]>([]);
+  const [deck, setDeck] = useState<TarotCard[]>(() => [...TAROT_CARDS]);
   const [selectedCardIds, setSelectedCardIds] = useState<number[]>(() => {
     const saved = getStorageWithTTL<StoredTarotResult>(TAROT_STORAGE_KEY);
     return saved?.selectedCardIds || [];
@@ -84,10 +84,6 @@ export const TarotReadingPage: React.FC = () => {
       setIsShuffling(false);
     }, 600);
   };
-
-  useEffect(() => {
-    shuffleDeck();
-  }, []);
 
   const triggerCardRevealLight = () => {
     triggerMysticTarotLight();

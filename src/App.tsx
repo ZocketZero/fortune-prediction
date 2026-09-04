@@ -8,12 +8,14 @@ import { JapanBlessingPage } from './components/JapanBlessingPage';
 import { GodBlessingPage } from './components/GodBlessingPage';
 import { EncyclopediaPage } from './components/EncyclopediaPage';
 import { BirthFortunePage } from './components/BirthFortunePage';
+import { BloodFortunePage } from './components/BloodFortunePage';
 import { Sparkles } from 'lucide-react';
 
 export type AppTab =
   | 'home'
   | 'reading'
   | 'birth_fortune'
+  | 'blood_fortune'
   | 'omikuji'
   | 'thai_siamsi'
   | 'thai_blessing'
@@ -29,6 +31,9 @@ export const App: React.FC = () => {
       hash === 'reading' ||
       hash === 'birth_fortune' ||
       hash === 'birth-fortune' ||
+      hash === 'blood_fortune' ||
+      hash === 'blood-fortune' ||
+      hash === 'blood' ||
       hash === 'omikuji' ||
       hash === 'thai_siamsi' ||
       hash === 'thai-siamsi' ||
@@ -41,6 +46,7 @@ export const App: React.FC = () => {
       hash === 'encyclopedia'
     ) {
       if (hash === 'birth-fortune') return 'birth_fortune';
+      if (hash === 'blood-fortune' || hash === 'blood') return 'blood_fortune';
       if (hash === 'thai-siamsi') return 'thai_siamsi';
       if (hash === 'thai-blessing') return 'thai_blessing';
       if (hash === 'japan-blessing') return 'japan_blessing';
@@ -112,6 +118,7 @@ export const App: React.FC = () => {
                 <option value="home">✨ หน้าหลัก</option>
                 <option value="reading">🧭 ไพ่ยิปซี Major Arcana</option>
                 <option value="birth_fortune">🎂 ดูดวงวันเดือนปีเกิด</option>
+                <option value="blood_fortune">🩸 ทำนายตามกรุ๊ปเลือด</option>
                 <option value="omikuji">⛩️ เซียมซีญี่ปุ่น (おみくじ)</option>
                 <option value="thai_siamsi">📜 เซียมซีไทย ๒๘ ใบ</option>
                 <option value="thai_blessing">🔥 ขอพรเทพเจ้าไทย</option>
@@ -132,7 +139,8 @@ export const App: React.FC = () => {
       <main className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-8 flex-1 w-full space-y-6 sm:space-y-8">
         {activeTab === 'home' && <MainPage onNavigate={(tab) => navigateTo(tab)} />}
         {activeTab === 'reading' && <TarotReadingPage />}
-        {activeTab === 'birth_fortune' && <BirthFortunePage />}
+        {activeTab === 'birth_fortune' && <BirthFortunePage onNavigate={(tab) => navigateTo(tab)} />}
+        {activeTab === 'blood_fortune' && <BloodFortunePage />}
         {activeTab === 'omikuji' && <OmikujiPage />}
         {activeTab === 'thai_siamsi' && <ThaiSiamsiPage />}
         {activeTab === 'thai_blessing' && <ThaiBlessingPage />}

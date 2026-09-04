@@ -128,15 +128,7 @@ export const ThaiSiamsiPage: React.FC = () => {
     setTimeout(() => {
       // 70% chance of 'shua' (approval), 15% 'im', 15% 'yang'
       const rand = Math.random();
-      let result: PoeiResult = 'shua';
-      if (rand < 0.70) {
-        result = 'shua';
-      } else if (rand < 0.85) {
-        result = 'im';
-      } else {
-        result = 'yang';
-      }
-
+      const result: PoeiResult = rand < 0.70 ? 'shua' : rand < 0.85 ? 'im' : 'yang';
       setPoeiResult(result);
       setIsThrowingPoei(false);
 
