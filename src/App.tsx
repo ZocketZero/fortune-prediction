@@ -1,6 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { MainPage } from './components/MainPage';
 import { Sparkles } from 'lucide-react';
+import { LoadingScreen } from './components/LoadingScreen';
 
 const TarotReadingPage = lazy(() => import('./components/TarotReadingPage').then(m => ({ default: m.TarotReadingPage })));
 const OmikujiPage = lazy(() => import('./components/OmikujiPage').then(m => ({ default: m.OmikujiPage })));
@@ -138,7 +139,7 @@ export const App: React.FC = () => {
 
       {/* Main Content */}
       <main className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-8 flex-1 w-full space-y-6 sm:space-y-8">
-        <Suspense fallback={<div className="flex items-center justify-center py-20 text-amber-400/80 animate-pulse text-sm">กำลังโหลด...</div>}>
+        <Suspense fallback={<LoadingScreen />}>
           {activeTab === 'home' && <MainPage onNavigate={(tab) => navigateTo(tab)} />}
           {activeTab === 'reading' && <TarotReadingPage />}
           {activeTab === 'birth_fortune' && <BirthFortunePage onNavigate={(tab) => navigateTo(tab)} />}
