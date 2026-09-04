@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { MainPage } from './components/MainPage';
-import { TarotReadingPage } from './components/TarotReadingPage';
-import { OmikujiPage } from './components/OmikujiPage';
-import { ThaiSiamsiPage } from './components/ThaiSiamsiPage';
-import { ThaiBlessingPage } from './components/ThaiBlessingPage';
-import { JapanBlessingPage } from './components/JapanBlessingPage';
-import { GodBlessingPage } from './components/GodBlessingPage';
-import { EncyclopediaPage } from './components/EncyclopediaPage';
-import { BirthFortunePage } from './components/BirthFortunePage';
-import { BloodFortunePage } from './components/BloodFortunePage';
 import { Sparkles } from 'lucide-react';
+
+const TarotReadingPage = lazy(() => import('./components/TarotReadingPage').then(m => ({ default: m.TarotReadingPage })));
+const OmikujiPage = lazy(() => import('./components/OmikujiPage').then(m => ({ default: m.OmikujiPage })));
+const ThaiSiamsiPage = lazy(() => import('./components/ThaiSiamsiPage').then(m => ({ default: m.ThaiSiamsiPage })));
+const ThaiBlessingPage = lazy(() => import('./components/ThaiBlessingPage').then(m => ({ default: m.ThaiBlessingPage })));
+const JapanBlessingPage = lazy(() => import('./components/JapanBlessingPage').then(m => ({ default: m.JapanBlessingPage })));
+const GodBlessingPage = lazy(() => import('./components/GodBlessingPage').then(m => ({ default: m.GodBlessingPage })));
+const EncyclopediaPage = lazy(() => import('./components/EncyclopediaPage').then(m => ({ default: m.EncyclopediaPage })));
+const BirthFortunePage = lazy(() => import('./components/BirthFortunePage').then(m => ({ default: m.BirthFortunePage })));
+const BloodFortunePage = lazy(() => import('./components/BloodFortunePage').then(m => ({ default: m.BloodFortunePage })));
 
 export type AppTab =
   | 'home'
@@ -137,16 +138,18 @@ export const App: React.FC = () => {
 
       {/* Main Content */}
       <main className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-8 flex-1 w-full space-y-6 sm:space-y-8">
-        {activeTab === 'home' && <MainPage onNavigate={(tab) => navigateTo(tab)} />}
-        {activeTab === 'reading' && <TarotReadingPage />}
-        {activeTab === 'birth_fortune' && <BirthFortunePage onNavigate={(tab) => navigateTo(tab)} />}
-        {activeTab === 'blood_fortune' && <BloodFortunePage />}
-        {activeTab === 'omikuji' && <OmikujiPage />}
-        {activeTab === 'thai_siamsi' && <ThaiSiamsiPage />}
-        {activeTab === 'thai_blessing' && <ThaiBlessingPage />}
-        {activeTab === 'japan_blessing' && <JapanBlessingPage />}
-        {activeTab === 'god_blessing' && <GodBlessingPage />}
-        {activeTab === 'encyclopedia' && <EncyclopediaPage />}
+        <Suspense fallback={<div className="flex items-center justify-center py-20 text-amber-400/80 animate-pulse text-sm">กำลังโหลด...</div>}>
+          {activeTab === 'home' && <MainPage onNavigate={(tab) => navigateTo(tab)} />}
+          {activeTab === 'reading' && <TarotReadingPage />}
+          {activeTab === 'birth_fortune' && <BirthFortunePage onNavigate={(tab) => navigateTo(tab)} />}
+          {activeTab === 'blood_fortune' && <BloodFortunePage />}
+          {activeTab === 'omikuji' && <OmikujiPage />}
+          {activeTab === 'thai_siamsi' && <ThaiSiamsiPage />}
+          {activeTab === 'thai_blessing' && <ThaiBlessingPage />}
+          {activeTab === 'japan_blessing' && <JapanBlessingPage />}
+          {activeTab === 'god_blessing' && <GodBlessingPage />}
+          {activeTab === 'encyclopedia' && <EncyclopediaPage />}
+        </Suspense>
       </main>
 
       {/* Footer */}
