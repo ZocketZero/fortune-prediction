@@ -12,17 +12,27 @@ import {
   Moon,
   Send,
   X,
-  Info
+  Info,
+  Palette,
+  Dices,
+  Layers
 } from 'lucide-react';
 import {
   KRATHONG_STYLES,
   KRATHONG_DECORATIONS,
+  KRATHONG_BASES,
+  KRATHONG_PETALS,
+  KRATHONG_CENTERS,
+  KRATHONG_CANDLES,
+  KRATHONG_INCENSES,
+  DEFAULT_KRATHONG_COMPONENTS,
   WISH_CATEGORIES,
   GANGA_BLESSINGS,
   INITIAL_RIVER_KRATHONGS,
   THAI_LOY_KRATHONG_MANTRA,
   type RiverKrathong,
-  type GangaBlessing
+  type GangaBlessing,
+  type KrathongComponents
 } from '../data/loyKrathongData';
 import { KrathongGraphic } from './KrathongGraphic';
 import { triggerLightBurst, triggerDivineBlessingLight } from '../utils/lightEffects';
@@ -49,6 +59,13 @@ export const LoyKrathongPage: React.FC = () => {
 
   // Customization Form State
   const [selectedStyleId, setSelectedStyleId] = useState<string>(KRATHONG_STYLES[0].id);
+  const [customComponents, setCustomComponents] = useState<KrathongComponents>(
+    KRATHONG_STYLES[0].defaultComponents || DEFAULT_KRATHONG_COMPONENTS
+  );
+  const [builderTab, setBuilderTab] = useState<'presets' | 'components'>('components');
+  const [activeComponentType, setActiveComponentType] = useState<
+    'base' | 'petal' | 'center' | 'candle' | 'incense'
+  >('base');
   const [selectedDecorations, setSelectedDecorations] = useState<string[]>([
     'incense-candle',
     'nine-coins',
@@ -178,6 +195,13 @@ export const LoyKrathongPage: React.FC = () => {
   const selectedStyle = KRATHONG_STYLES.find((s) => s.id === selectedStyleId) || KRATHONG_STYLES[0];
   const selectedCategory = WISH_CATEGORIES.find((c) => c.id === selectedCategoryId) || WISH_CATEGORIES[0];
 
+  // Current active component items
+  const currentBase = KRATHONG_BASES.find((b) => b.id === customComponents.baseId) || KRATHONG_BASES[0];
+  const currentPetal = KRATHONG_PETALS.find((p) => p.id === customComponents.petalId) || KRATHONG_PETALS[0];
+  const currentCenter = KRATHONG_CENTERS.find((c) => c.id === customComponents.centerFlowerId) || KRATHONG_CENTERS[0];
+  const currentCandle = KRATHONG_CANDLES.find((c) => c.id === customComponents.candleId) || KRATHONG_CANDLES[0];
+  const currentIncense = KRATHONG_INCENSES.find((i) => i.id === customComponents.incenseId) || KRATHONG_INCENSES[0];
+
   // Initialize or restore from LocalStorage
   useEffect(() => {
     try {
@@ -186,6 +210,15 @@ export const LoyKrathongPage: React.FC = () => {
         const parsed = JSON.parse(saved);
         if (parsed.myKrathong) {
           setMyKrathong(parsed.myKrathong);
+          if (parsed.myKrathong.customComponents) {
+            setCustomComponents(parsed.myKrathong.customComponents);
+          }
+          if (parsed.myKrathong.krathongStyleId) {
+            setSelectedStyleId(parsed.myKrathong.krathongStyleId);
+          }
+          if (parsed.myKrathong.decorations) {
+            setSelectedDecorations(parsed.myKrathong.decorations);
+          }
           setRiverKrathongs((prev) => {
             const exists = prev.some((k) => k.id === parsed.myKrathong.id);
             return exists ? prev : [parsed.myKrathong, ...prev];
@@ -199,6 +232,44 @@ export const LoyKrathongPage: React.FC = () => {
       // Ignore storage errors
     }
   }, []);
+
+  // Component Modifiers
+  const handleSelectPreset = (styleId: string) => {
+    setSelectedStyleId(styleId);
+    const style = KRATHONG_STYLES.find((s) => s.id === styleId);
+    if (style?.defaultComponents) {
+      setCustomComponents({ ...style.defaultComponents });
+    }
+  };
+
+  const handleModifyComponent = <K extends keyof KrathongComponents>(
+    key: K,
+    value: KrathongComponents[K]
+  ) => {
+    setCustomComponents((prev) => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const handleRandomizeComponents = () => {
+    const randomBase = KRATHONG_BASES[Math.floor(Math.random() * KRATHONG_BASES.length)].id;
+    const randomPetal = KRATHONG_PETALS[Math.floor(Math.random() * KRATHONG_PETALS.length)].id;
+    const randomCenter = KRATHONG_CENTERS[Math.floor(Math.random() * KRATHONG_CENTERS.length)].id;
+    const randomCandle = KRATHONG_CANDLES[Math.floor(Math.random() * KRATHONG_CANDLES.length)].id;
+    const randomIncense = KRATHONG_INCENSES[Math.floor(Math.random() * KRATHONG_INCENSES.length)].id;
+
+    setCustomComponents({
+      baseId: randomBase,
+      petalId: randomPetal,
+      centerFlowerId: randomCenter,
+      candleId: randomCandle,
+      incenseId: randomIncense
+    });
+
+    playSoundEffect('chime');
+    triggerLightBurst({ particleCount: 45, spread: 65 });
+  };
 
   // Audio Synthesizer: River Chime & Gentle Ripple
   const playSoundEffect = (type: 'chime' | 'splash' | 'firework' | 'lantern') => {
@@ -317,6 +388,7 @@ export const LoyKrathongPage: React.FC = () => {
       category: selectedCategoryId,
       krathongStyleId: selectedStyleId,
       decorations: selectedDecorations,
+      customComponents: { ...customComponents },
       xPercent: 50,
       yPercent: 62,
       scale: 1.25,
@@ -526,6 +598,7 @@ export const LoyKrathongPage: React.FC = () => {
               <div className="absolute -inset-8 bg-amber-400/20 rounded-full blur-2xl animate-pulse"></div>
               <KrathongGraphic
                 style={selectedStyle}
+                customComponents={customComponents}
                 decorations={selectedDecorations}
                 size="xl"
                 showReflections={true}
@@ -697,6 +770,7 @@ export const LoyKrathongPage: React.FC = () => {
                     <div className="transition-transform duration-300 group-hover:scale-110">
                       <KrathongGraphic
                         style={kStyle}
+                        customComponents={isMine ? customComponents : k.customComponents || kStyle.defaultComponents}
                         decorations={k.decorations}
                         size={isMine ? 'lg' : 'md'}
                         showReflections={true}
@@ -766,94 +840,427 @@ export const LoyKrathongPage: React.FC = () => {
       {/* Mode 3: Builder & Prayer Form (Default) */}
       {viewMode === 'builder' && (
         <form onSubmit={handleLaunchKrathong} className="space-y-6 sm:space-y-8">
-          {/* Step 1: เลือกรูปแบบกระทง (Krathong Style Selector) */}
-          <div className="glass-panel rounded-3xl p-5 sm:p-7 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cyan-500/20 pb-3">
+          {/* Step 1: สตูดิโอปรับแต่งกระทง (Krathong DIY Component Studio & Preset Themes) */}
+          <div className="glass-panel rounded-3xl p-5 sm:p-7 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cyan-500/20 pb-4">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-cyan-200 flex items-center gap-2">
-                  <span>๑. เลือกประดิษฐ์กระทงมงคล</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800">
-                    {KRATHONG_STYLES.length} รูปแบบ
-                  </span>
+                <h3 className="text-base sm:text-xl font-bold text-cyan-200 flex items-center gap-2">
+                  <Palette className="w-5 h-5 text-amber-400" />
+                  <span>๑. สตูดิโอประดิษฐ์และปรับแต่งกระทงมงคล</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  เลือกกระทงที่มีความหมายสอดคล้องกับความปรารถนาและเจตนารักษ์สายน้ำ
+                  ปรับเปลี่ยนชิ้นส่วนได้อิสระ (ฐาน กลีบ ดอกไม้ เทียน ธูป) หรือเลือกจากชุดธีมมงคลสำเร็จรูป
                 </p>
+              </div>
+
+              {/* Mode switch tabs: DIY Components vs Preset Themes */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setBuilderTab('components')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
+                    builderTab === 'components'
+                      ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md'
+                      : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>🎨 ปรับแต่งชิ้นส่วนเอง</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBuilderTab('presets')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
+                    builderTab === 'presets'
+                      ? 'bg-cyan-500 text-slate-950 border-cyan-400 shadow-md'
+                      : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>✨ ธีมสำเร็จรูป</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRandomizeComponents}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold border border-purple-500/40 bg-purple-900/30 text-purple-200 hover:bg-purple-800/50 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                  title="สุ่มส่วนประกอบมงคลแบบไม่ซ้ำใคร"
+                >
+                  <Dices className="w-3.5 h-3.5 text-purple-400" />
+                  <span>🎲 สุ่มชิ้นส่วน</span>
+                </button>
               </div>
             </div>
 
-            {/* Krathong Style Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
-              {KRATHONG_STYLES.map((style) => {
-                const isSelected = style.id === selectedStyleId;
-                return (
-                  <button
-                    key={style.id}
-                    type="button"
-                    onClick={() => setSelectedStyleId(style.id)}
-                    className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden group ${
-                      isSelected
-                        ? 'bg-cyan-950/80 border-cyan-400 ring-2 ring-cyan-400/40 shadow-lg shadow-cyan-950/60'
-                        : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/90'
-                    }`}
-                  >
-                    {/* Badge */}
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-950/80 text-amber-300 border border-amber-500/20 truncate max-w-[120px]">
-                        {style.badge}
-                      </span>
-                      {isSelected && (
-                        <span className="w-4 h-4 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center text-[10px] font-bold">
-                          ✓
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Krathong Mini Preview */}
-                    <div className="py-2 flex items-center justify-center">
-                      <div className="transform group-hover:scale-105 transition-transform">
-                        <KrathongGraphic
-                          style={style}
-                          decorations={['incense-candle']}
-                          size="sm"
-                          showReflections={false}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-2">
-                      <p className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-cyan-300 transition-colors">
-                        {style.name}
-                      </p>
-                      <p className="text-[10px] text-emerald-400 font-medium mt-0.5">
-                        🌱 {style.ecoScore}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Selected Style Detail Highlight */}
-            <div className="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex flex-col sm:flex-row items-center gap-4">
-              <div className="shrink-0 p-2 rounded-2xl bg-slate-950/70 border border-cyan-500/20">
+            {/* Live Interactive Krathong Studio Showcase */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-slate-950/80 via-cyan-950/30 to-slate-950/90 border border-cyan-500/30 flex flex-col md:flex-row items-center gap-5 shadow-inner">
+              <div className="shrink-0 flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-slate-900/60 border border-cyan-500/20 relative">
                 <KrathongGraphic
                   style={selectedStyle}
+                  customComponents={customComponents}
                   decorations={selectedDecorations}
-                  size="md"
+                  size="lg"
                   showReflections={true}
                 />
+                <span className="text-[10px] text-cyan-300 font-medium mt-1">
+                  👁️ ตัวอย่างกระทงจริงแบบเรียลไทม์
+                </span>
               </div>
-              <div className="space-y-1.5 text-center sm:text-left flex-1 min-w-0">
-                <p className="text-xs text-amber-400 font-semibold">{selectedStyle.badge}</p>
-                <h4 className="text-base font-bold text-white">{selectedStyle.name}</h4>
-                <p className="text-xs text-slate-300 leading-relaxed">{selectedStyle.description}</p>
-                <p className="text-xs text-cyan-300/90 leading-relaxed font-light">
-                  <strong className="font-semibold text-cyan-200">ความหมายมงคล: </strong>
-                  {selectedStyle.meaning}
+
+              {/* Realtime component breakdown pills */}
+              <div className="flex-1 min-w-0 space-y-2 text-center md:text-left">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-amber-300 border border-amber-500/30">
+                    🌿 ฐาน: {currentBase.name}
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-pink-300 border border-pink-500/30">
+                    🌸 กลีบ: {currentPetal.name}
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-yellow-300 border border-yellow-500/30">
+                    🌼 ใจกลาง: {currentCenter.name}
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-orange-300 border border-orange-500/30">
+                    🕯️ เทียน: {currentCandle.name}
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-blue-300 border border-blue-500/30">
+                    🎋 ธูป: {currentIncense.name}
+                  </span>
+                </div>
+
+                <h4 className="text-sm sm:text-base font-bold text-white leading-tight">
+                  {currentPetal.name} บน{currentBase.name}
+                </h4>
+
+                <p className="text-xs text-slate-300 leading-relaxed font-light">
+                  <strong className="text-amber-400 font-semibold">ความหมายมงคลรวม: </strong>
+                  {currentPetal.meaning} • {currentCenter.meaning} • {currentCandle.meaning}
+                </p>
+
+                <p className="text-[11px] text-emerald-400 font-medium">
+                  🌱 สิ่งแวดล้อม: {currentBase.ecoTag} & {currentIncense.typeTag}
                 </p>
               </div>
             </div>
+
+            {/* TAB 1: DIY Components Customizer */}
+            {builderTab === 'components' && (
+              <div className="space-y-4 pt-1">
+                {/* Component Sub-Tabs */}
+                <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-800 pb-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setActiveComponentType('base')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeComponentType === 'base'
+                        ? 'bg-emerald-600/40 border-emerald-400 text-emerald-200'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span>🌿 ฐานกระทง</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-950">
+                      {KRATHONG_BASES.length}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveComponentType('petal')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeComponentType === 'petal'
+                        ? 'bg-pink-600/40 border-pink-400 text-pink-200'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span>🌸 กลีบกระทง</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-950">
+                      {KRATHONG_PETALS.length}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveComponentType('center')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeComponentType === 'center'
+                        ? 'bg-yellow-600/40 border-yellow-400 text-yellow-200'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span>🌼 ดอกไม้ใจกลาง</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-950">
+                      {KRATHONG_CENTERS.length}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveComponentType('candle')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeComponentType === 'candle'
+                        ? 'bg-amber-600/40 border-amber-400 text-amber-200'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span>🕯️ เทียน & แสงไฟ</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-950">
+                      {KRATHONG_CANDLES.length}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveComponentType('incense')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeComponentType === 'incense'
+                        ? 'bg-cyan-600/40 border-cyan-400 text-cyan-200'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span>🎋 รูปแบบธูป</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-950">
+                      {KRATHONG_INCENSES.length}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Sub-tab 1: Base items */}
+                {activeComponentType === 'base' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {KRATHONG_BASES.map((b) => {
+                      const isSelected = customComponents.baseId === b.id;
+                      return (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => handleModifyComponent('baseId', b.id)}
+                          className={`p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-start gap-3 ${
+                            isSelected
+                              ? 'bg-emerald-950/60 border-emerald-400 ring-2 ring-emerald-400/40 shadow-lg'
+                              : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          <span className="text-2xl p-2 rounded-xl bg-slate-950 border border-slate-800 shrink-0">
+                            {b.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-bold text-slate-100">{b.name}</p>
+                              {isSelected && <span className="text-emerald-400 text-xs font-bold">✓</span>}
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
+                              {b.description}
+                            </p>
+                            <span className="inline-block mt-1 text-[10px] text-emerald-300 font-semibold px-2 py-0.2 rounded-full bg-slate-950/80">
+                              🌱 {b.ecoTag}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Sub-tab 2: Petal items */}
+                {activeComponentType === 'petal' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                    {KRATHONG_PETALS.map((p) => {
+                      const isSelected = customComponents.petalId === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => handleModifyComponent('petalId', p.id)}
+                          className={`p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-start gap-3 ${
+                            isSelected
+                              ? 'bg-pink-950/60 border-pink-400 ring-2 ring-pink-400/40 shadow-lg'
+                              : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          <span className="text-2xl p-2 rounded-xl bg-slate-950 border border-slate-800 shrink-0">
+                            {p.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-bold text-slate-100">{p.name}</p>
+                              {isSelected && <span className="text-pink-400 text-xs font-bold">✓</span>}
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1 leading-relaxed">
+                              {p.description}
+                            </p>
+                            <span className="inline-block mt-1 text-[10px] text-pink-300 font-semibold px-2 py-0.2 rounded-full bg-slate-950/80">
+                              ✨ {p.meaning}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Sub-tab 3: Center Flower items */}
+                {activeComponentType === 'center' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {KRATHONG_CENTERS.map((c) => {
+                      const isSelected = customComponents.centerFlowerId === c.id;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => handleModifyComponent('centerFlowerId', c.id)}
+                          className={`p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-start gap-3 ${
+                            isSelected
+                              ? 'bg-yellow-950/60 border-yellow-400 ring-2 ring-yellow-400/40 shadow-lg'
+                              : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          <span className="text-2xl p-2 rounded-xl bg-slate-950 border border-slate-800 shrink-0">
+                            {c.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-bold text-slate-100">{c.name}</p>
+                              {isSelected && <span className="text-yellow-400 text-xs font-bold">✓</span>}
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1 leading-relaxed">
+                              {c.description}
+                            </p>
+                            <span className="inline-block mt-1 text-[10px] text-yellow-300 font-semibold px-2 py-0.2 rounded-full bg-slate-950/80">
+                              ✨ {c.meaning}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Sub-tab 4: Candle items */}
+                {activeComponentType === 'candle' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {KRATHONG_CANDLES.map((c) => {
+                      const isSelected = customComponents.candleId === c.id;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => handleModifyComponent('candleId', c.id)}
+                          className={`p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-start gap-3 ${
+                            isSelected
+                              ? 'bg-amber-950/60 border-amber-400 ring-2 ring-amber-400/40 shadow-lg'
+                              : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          <span className="text-2xl p-2 rounded-xl bg-slate-950 border border-slate-800 shrink-0">
+                            {c.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-bold text-slate-100">{c.name}</p>
+                              {isSelected && <span className="text-amber-400 text-xs font-bold">✓</span>}
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1 leading-relaxed">
+                              {c.description}
+                            </p>
+                            <span className="inline-block mt-1 text-[10px] text-amber-300 font-semibold px-2 py-0.2 rounded-full bg-slate-950/80">
+                              🕯️ {c.meaning}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Sub-tab 5: Incense items */}
+                {activeComponentType === 'incense' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {KRATHONG_INCENSES.map((i) => {
+                      const isSelected = customComponents.incenseId === i.id;
+                      return (
+                        <button
+                          key={i.id}
+                          type="button"
+                          onClick={() => handleModifyComponent('incenseId', i.id)}
+                          className={`p-3 rounded-2xl border text-left cursor-pointer transition-all flex items-start gap-3 ${
+                            isSelected
+                              ? 'bg-cyan-950/60 border-cyan-400 ring-2 ring-cyan-400/40 shadow-lg'
+                              : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          <span className="text-2xl p-2 rounded-xl bg-slate-950 border border-slate-800 shrink-0">
+                            {i.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-bold text-slate-100">{i.name}</p>
+                              {isSelected && <span className="text-cyan-400 text-xs font-bold">✓</span>}
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
+                              {i.description}
+                            </p>
+                            <span className="inline-block mt-1 text-[10px] text-cyan-300 font-semibold px-2 py-0.2 rounded-full bg-slate-950/80">
+                              {i.typeTag}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 2: Quick Presets */}
+            {builderTab === 'presets' && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-1">
+                {KRATHONG_STYLES.map((style) => {
+                  const isSelected = style.id === selectedStyleId;
+                  return (
+                    <button
+                      key={style.id}
+                      type="button"
+                      onClick={() => handleSelectPreset(style.id)}
+                      className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden group ${
+                        isSelected
+                          ? 'bg-cyan-950/80 border-cyan-400 ring-2 ring-cyan-400/40 shadow-lg shadow-cyan-950/60'
+                          : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/90'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between w-full mb-1">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-950/80 text-amber-300 border border-amber-500/20 truncate max-w-[120px]">
+                          {style.badge}
+                        </span>
+                        {isSelected && (
+                          <span className="w-4 h-4 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center text-[10px] font-bold">
+                            ✓
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="py-2 flex items-center justify-center">
+                        <div className="transform group-hover:scale-105 transition-transform">
+                          <KrathongGraphic
+                            style={style}
+                            customComponents={style.defaultComponents}
+                            decorations={['incense-candle']}
+                            size="sm"
+                            showReflections={false}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-2">
+                        <p className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-cyan-300 transition-colors">
+                          {style.name}
+                        </p>
+                        <p className="text-[10px] text-emerald-400 font-medium mt-0.5">
+                          🌱 {style.ecoScore}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Step 2: เลือกเครื่องสักการะใส่ในกระทง (Decorations) */}
@@ -1081,6 +1488,12 @@ export const LoyKrathongPage: React.FC = () => {
                   KRATHONG_STYLES.find((s) => s.id === inspectedKrathong.krathongStyleId) ||
                   KRATHONG_STYLES[0]
                 }
+                customComponents={
+                  inspectedKrathong.isUser
+                    ? customComponents
+                    : inspectedKrathong.customComponents ||
+                      (KRATHONG_STYLES.find((s) => s.id === inspectedKrathong.krathongStyleId) || KRATHONG_STYLES[0]).defaultComponents
+                }
                 decorations={inspectedKrathong.decorations}
                 size="md"
                 showReflections={true}
@@ -1145,6 +1558,7 @@ export const LoyKrathongPage: React.FC = () => {
               <div className="flex justify-center py-1">
                 <KrathongGraphic
                   style={selectedStyle}
+                  customComponents={myKrathong.customComponents || customComponents}
                   decorations={myKrathong.decorations}
                   size="md"
                   showReflections={true}

@@ -1,3 +1,66 @@
+export interface KrathongComponents {
+  baseId: string;
+  petalId: string;
+  centerFlowerId: string;
+  candleId: string;
+  incenseId: string;
+}
+
+export interface KrathongBaseItem {
+  id: string;
+  name: string;
+  description: string;
+  baseColor: string;
+  bottomColor: string;
+  rimColor: string;
+  ecoTag: string;
+  icon: string;
+}
+
+export interface KrathongPetalItem {
+  id: string;
+  name: string;
+  description: string;
+  petalColor: string;
+  gradientBottom: string;
+  strokeColor: string;
+  meaning: string;
+  icon: string;
+}
+
+export interface KrathongCenterItem {
+  id: string;
+  name: string;
+  description: string;
+  centerColor: string;
+  highlightColor: string;
+  secondaryDotColor: string;
+  meaning: string;
+  icon: string;
+}
+
+export interface KrathongCandleItem {
+  id: string;
+  name: string;
+  description: string;
+  candleColor: string;
+  flameCoreColor: string;
+  auraColor: string;
+  meaning: string;
+  icon: string;
+}
+
+export interface KrathongIncenseItem {
+  id: string;
+  name: string;
+  description: string;
+  stickColor: string;
+  tipColor: string;
+  hasSmoke: boolean;
+  typeTag: string;
+  icon: string;
+}
+
 export interface KrathongStyle {
   id: string;
   name: string;
@@ -10,6 +73,7 @@ export interface KrathongStyle {
   centerColor: string;
   candleColor: string;
   auraColor: string;
+  defaultComponents?: KrathongComponents;
 }
 
 export interface KrathongDecoration {
@@ -43,6 +107,7 @@ export interface RiverKrathong {
   category: string;
   krathongStyleId: string;
   decorations: string[];
+  customComponents?: KrathongComponents;
   xPercent: number; // 5 - 90%
   yPercent: number; // 25 - 85%
   scale: number;    // 0.7 - 1.25
@@ -50,6 +115,299 @@ export interface RiverKrathong {
   createdAt: string;
   isUser?: boolean;
 }
+
+export const KRATHONG_BASES: KrathongBaseItem[] = [
+  {
+    id: 'banana-trunk',
+    name: 'ฐานหยวกกล้วยใบตองสด',
+    description: 'หยวกกล้วยธรรมชาติกรุใบตองตานีเขียวสดใส สืบสานภูมิปัญญาไทยแท้',
+    baseColor: '#15803d',
+    bottomColor: '#052e16',
+    rimColor: '#166534',
+    ecoTag: 'ธรรมชาติ 100%',
+    icon: '🌿'
+  },
+  {
+    id: 'coconut-shell',
+    name: 'ฐานกะลามะพร้าวตามประทีป',
+    description: 'กะลามะพร้าวขัดเงาเรียบเนียน ลอยน้ำได้มั่นคง ไม่โคลงเคลง',
+    baseColor: '#78350f',
+    bottomColor: '#451a03',
+    rimColor: '#92400e',
+    ecoTag: 'วัสดุธรรมชาติพื้นบ้าน',
+    icon: '🥥'
+  },
+  {
+    id: 'eco-bread',
+    name: 'ฐานขนมปังรักษ์สายน้ำ',
+    description: 'อบจากแป้งสาลีเนื้อนุ่ม ย่อยสลายเป็นอาหารปลา ได้บุญให้อาหารสัตว์น้ำ',
+    baseColor: '#d97706',
+    bottomColor: '#92400e',
+    rimColor: '#b45309',
+    ecoTag: 'อาหารปลา 100%',
+    icon: '🍞'
+  },
+  {
+    id: 'crystal-ice',
+    name: 'ฐานน้ำแข็งคริสตัลใส',
+    description: 'น้ำแข็งแกะสลักบริสุทธิ์ เย็นชื่นใจ ละลายคืนสู่แม่น้ำอย่างไร้ร่องรอย',
+    baseColor: '#38bdf8',
+    bottomColor: '#0284c7',
+    rimColor: '#0284c7',
+    ecoTag: 'ละลายคืนน้ำ 0% ขยะ',
+    icon: '🧊'
+  },
+  {
+    id: 'golden-royal',
+    name: 'ฐานสุวรรณวิมานทองคำ',
+    description: 'ฐานเคลือบประกายทองคำมงคล วิจิตรตระการตา ดั่งกระทงหลวงโบราณ',
+    baseColor: '#facc15',
+    bottomColor: '#713f12',
+    rimColor: '#ca8a04',
+    ecoTag: 'สิริมงคลชั้นสูง',
+    icon: '👑'
+  }
+];
+
+export const KRATHONG_PETALS: KrathongPetalItem[] = [
+  {
+    id: 'banana-fold',
+    name: 'กลีบผกากรองใบตองสด',
+    description: 'พับจีบใบตองตานีปลายแหลม คลาสสิกตามแบบแผนราชสำนัก',
+    petalColor: '#22c55e',
+    gradientBottom: '#14532d',
+    strokeColor: '#052e16',
+    meaning: 'แคล้วคลาด ปลอดภัย ร่มเย็น',
+    icon: '🍃'
+  },
+  {
+    id: 'pink-lotus',
+    name: 'กลีบบัวสวรรค์สีชมพู',
+    description: 'กลีบดอกบัวหลวงสีชมพูซ้อนชั้น ดุจบัวบานรับแสงจันทร์เพ็ญ',
+    petalColor: '#f472b6',
+    gradientBottom: '#db2777',
+    strokeColor: '#831843',
+    meaning: 'ความรักสมหวัง เมตตามหานิยม',
+    icon: '🌸'
+  },
+  {
+    id: 'yellow-marigold',
+    name: 'กลีบดาวเรืองสีเหลืองทอง',
+    description: 'สีเหลืองทองสว่างไสว เปล่งรัศมีความมั่งคั่งและความรุ่งเรือง',
+    petalColor: '#fbbf24',
+    gradientBottom: '#d97706',
+    strokeColor: '#78350f',
+    meaning: 'โชคลาภเงินทอง ค้าขายร่ำรวย',
+    icon: '🌼'
+  },
+  {
+    id: 'red-rose',
+    name: 'กลีบกุหลาบแดงมหารัก',
+    description: 'กลีบกุหลาบสดสีแดงกำมะหยี่ ดึงดูดพลังเสน่หาและความรักแท้',
+    petalColor: '#f43f5e',
+    gradientBottom: '#9f1239',
+    strokeColor: '#4c0519',
+    meaning: 'รักมั่นคง คู่แท้เสน่หา',
+    icon: '🌹'
+  },
+  {
+    id: 'purple-orchid',
+    name: 'กลีบกล้วยไม้ม่วงราชาวดี',
+    description: 'กลีบกล้วยไม้สีม่วงคราม อ่อนช้อยสง่างาม เสริมสง่าราศี',
+    petalColor: '#c084fc',
+    gradientBottom: '#7e22ce',
+    strokeColor: '#3b0764',
+    meaning: 'บารมี เกียรติยศ ผู้ใหญ่เมตตา',
+    icon: '🪻'
+  },
+  {
+    id: 'cyan-crystal',
+    name: 'กลีบแก้วประกายมรกตธารา',
+    description: 'กลีบแก้วสีฟ้าอมเขียวประกายแสง สื่อถึงความเย็นกายสบายใจ',
+    petalColor: '#67e8f9',
+    gradientBottom: '#0891b2',
+    strokeColor: '#164e63',
+    meaning: 'จิตใจสงบนิ่ง ดับทุกข์ร้อน',
+    icon: '💎'
+  },
+  {
+    id: 'white-lotus',
+    name: 'กลีบบัวขาวมุกบริสุทธิ์',
+    description: 'กลีบดอกบัวสีขาวนวลสะอาด สัญลักษณ์แห่งความบริสุทธิ์ผุดผ่อง',
+    petalColor: '#f8fafc',
+    gradientBottom: '#64748b',
+    strokeColor: '#334155',
+    meaning: 'สติปัญญา สมาธิ จิตใจบริสุทธิ์',
+    icon: '🤍'
+  }
+];
+
+export const KRATHONG_CENTERS: KrathongCenterItem[] = [
+  {
+    id: 'marigold-bed',
+    name: 'ดอกดาวเรืองทองเรืองรอง',
+    description: 'กลุ่มดอกดาวเรืองสีเหลืองทองอร่ามแน่นใจกลางกระทง',
+    centerColor: '#facc15',
+    highlightColor: '#fef08a',
+    secondaryDotColor: '#f59e0b',
+    meaning: 'เงินทองไหลมาเทมา ทรัพย์สินเพิ่มพูน',
+    icon: '🌼'
+  },
+  {
+    id: 'lotus-core',
+    name: 'ดอกบัวสวรรค์หลวงบานสง่า',
+    description: 'ดอกบัวหลวงชมพูสดใสบานตรงกลาง เกสรสีทองส่งกลิ่นหอม',
+    centerColor: '#f472b6',
+    highlightColor: '#fde047',
+    secondaryDotColor: '#fb7185',
+    meaning: 'ความรักสดใส จิตใจผ่องแผ้ว',
+    icon: '🪷'
+  },
+  {
+    id: 'jasmine-crown',
+    name: 'มงกุฎดอกมะลิสดหอมเย็น',
+    description: 'ดอกมะลิสดเรียงร้อยเป็นวงแหวน หอมชื่นใจ คลายความกังวล',
+    centerColor: '#ffffff',
+    highlightColor: '#f8fafc',
+    secondaryDotColor: '#cbd5e1',
+    meaning: 'ครอบครัวอบอุ่น สงบร่มเย็น',
+    icon: '🤍'
+  },
+  {
+    id: 'red-rose-bed',
+    name: 'พุ่มดอกกุหลาบแดงเสน่หา',
+    description: 'ดอกกุหลาบแดงจัดช่อแน่น สื่อถึงไฟแห่งความรักที่ไม่มอดดับ',
+    centerColor: '#e11d48',
+    highlightColor: '#fda4af',
+    secondaryDotColor: '#be123c',
+    meaning: 'เสน่ห์ดึงดูดใจ รักใคร่กลมเกลียว',
+    icon: '🌹'
+  },
+  {
+    id: 'purple-orchid-bed',
+    name: 'ช่อกล้วยไม้เกียรติยศ',
+    description: 'กล้วยไม้สีม่วงเข้มเสริมความหรูหราและบารมี',
+    centerColor: '#a855f7',
+    highlightColor: '#f3e8ff',
+    secondaryDotColor: '#7e22ce',
+    meaning: 'การงานก้าวหน้า ได้รับการยกย่อง',
+    icon: '🪻'
+  },
+  {
+    id: 'sunflower-bed',
+    name: 'ดอกทานตะวันเปี่ยมพลังชีวิต',
+    description: 'ดอกทานตะวันสีทองอร่าม เบิกบานรับแสงจันทร์และประทีป',
+    centerColor: '#eab308',
+    highlightColor: '#fef9c3',
+    secondaryDotColor: '#78350f',
+    meaning: 'มีพลังใจ สุขภาพแข็งแรง เบิกบาน',
+    icon: '🌻'
+  }
+];
+
+export const KRATHONG_CANDLES: KrathongCandleItem[] = [
+  {
+    id: 'amber',
+    name: 'เทียนทองนำทาง (Golden Amber)',
+    description: 'เทียนขี้ผึ้งสีเหลืองทองดั้งเดิม เปลวไฟสีทองอบอุ่นสว่างไสว',
+    candleColor: '#f59e0b',
+    flameCoreColor: '#ffffff',
+    auraColor: 'rgba(245, 158, 11, 0.55)',
+    meaning: 'ปัญญาแจ่มใส ส่องทางสว่างสู่ความสำเร็จ',
+    icon: '🕯️'
+  },
+  {
+    id: 'pink',
+    name: 'เทียนชมพูเสน่หา (Rose Pink)',
+    description: 'เทียนสีชมพูกลีบบัว เปลวไฟสีชมพูประกายเสน่ห์',
+    candleColor: '#ec4899',
+    flameCoreColor: '#ffffff',
+    auraColor: 'rgba(236, 72, 153, 0.55)',
+    meaning: 'ความรักสมหวัง เมตตามหานิยม คนรักเอ็นดู',
+    icon: '💖'
+  },
+  {
+    id: 'red',
+    name: 'เทียนแดงมหาโชค (Ruby Red)',
+    description: 'เทียนสีแดงสดใส จุดพลังความมั่นใจและโชคลาภก้อนใหญ่',
+    candleColor: '#ef4444',
+    flameCoreColor: '#ffffff',
+    auraColor: 'rgba(239, 68, 68, 0.55)',
+    meaning: 'ขจัดอุปสรรค พลังใจเข้มแข็ง ชนะทุกศัตรู',
+    icon: '❤️'
+  },
+  {
+    id: 'cyan',
+    name: 'เทียนฟ้าประกายธารา (Aqua Cyan)',
+    description: 'เทียนสีฟ้าคราม สื่อถึงพระแม่คงคาและความชุ่มเย็น',
+    candleColor: '#06b6d4',
+    flameCoreColor: '#ffffff',
+    auraColor: 'rgba(6, 182, 212, 0.55)',
+    meaning: 'จิตใจสงบร่มเย็น ไร้โรคภัย แคล้วคลาดปลอดภัย',
+    icon: '🩵'
+  },
+  {
+    id: 'purple',
+    name: 'เทียนม่วงเรืองเวท (Mystic Purple)',
+    description: 'เทียนสีม่วงเรืองรอง สื่อถึงญาณหยั่งรู้และบารมี',
+    candleColor: '#a855f7',
+    flameCoreColor: '#ffffff',
+    auraColor: 'rgba(168, 85, 247, 0.55)',
+    meaning: 'ความสำเร็จในการงาน มีผู้ใหญ่ค้ำจุน',
+    icon: '💜'
+  },
+  {
+    id: 'white',
+    name: 'เทียนขาวมุกบริสุทธิ์ (Pure White)',
+    description: 'เทียนสีขาวสะอาดตา แสงสว่างนวลตา สื่อถึงความสงบสุข',
+    candleColor: '#f8fafc',
+    flameCoreColor: '#ffffff',
+    auraColor: 'rgba(248, 250, 252, 0.55)',
+    meaning: 'จิตใจผ่องใส สติปัญญา สมาธิตั้งมั่น',
+    icon: '🤍'
+  }
+];
+
+export const KRATHONG_INCENSES: KrathongIncenseItem[] = [
+  {
+    id: 'traditional',
+    name: 'ธูปมงคล ๓ ดอก (ดั้งเดิม)',
+    description: 'ก้านธูปสีแดง/ทอง บูชาคุณพระรัตนตรัย ควันลอยกรุ่นสู่ฟากฟ้า',
+    stickColor: '#854d0e',
+    tipColor: '#ef4444',
+    hasSmoke: true,
+    typeTag: 'ประเพณีแท้',
+    icon: '🪔'
+  },
+  {
+    id: 'incense-wood',
+    name: 'ธูปหอมกำยานไม้กฤษณา',
+    description: 'ก้านธูปไม้หอมธรรมชาติ ให้กลิ่นอายสงบเยือกเย็น',
+    stickColor: '#451a03',
+    tipColor: '#f97316',
+    hasSmoke: true,
+    typeTag: 'กลิ่นหอมผ่อนคลาย',
+    icon: '🪵'
+  },
+  {
+    id: 'led-flame',
+    name: 'ธูปเทียน LED รักษ์สิ่งแวดล้อม',
+    description: 'นวัตกรรมไฟประทีปไร้ควัน 0% มลพิษทางอากาศ ปลอดภัย รักษ์โลก',
+    stickColor: '#0284c7',
+    tipColor: '#38bdf8',
+    hasSmoke: false,
+    typeTag: 'รักษ์สิ่งแวดล้อม 100%',
+    icon: '💡'
+  }
+];
+
+export const DEFAULT_KRATHONG_COMPONENTS: KrathongComponents = {
+  baseId: 'banana-trunk',
+  petalId: 'pink-lotus',
+  centerFlowerId: 'marigold-bed',
+  candleId: 'amber',
+  incenseId: 'traditional'
+};
 
 export const KRATHONG_STYLES: KrathongStyle[] = [
   {
@@ -63,7 +421,14 @@ export const KRATHONG_STYLES: KrathongStyle[] = [
     baseColor: '#15803d',
     centerColor: '#facc15',
     candleColor: '#f59e0b',
-    auraColor: 'rgba(234, 179, 8, 0.4)'
+    auraColor: 'rgba(234, 179, 8, 0.4)',
+    defaultComponents: {
+      baseId: 'banana-trunk',
+      petalId: 'pink-lotus',
+      centerFlowerId: 'marigold-bed',
+      candleId: 'amber',
+      incenseId: 'traditional'
+    }
   },
   {
     id: 'pink-lotus',
@@ -76,7 +441,14 @@ export const KRATHONG_STYLES: KrathongStyle[] = [
     baseColor: '#166534',
     centerColor: '#fde047',
     candleColor: '#ec4899',
-    auraColor: 'rgba(244, 114, 182, 0.45)'
+    auraColor: 'rgba(244, 114, 182, 0.45)',
+    defaultComponents: {
+      baseId: 'banana-trunk',
+      petalId: 'pink-lotus',
+      centerFlowerId: 'lotus-core',
+      candleId: 'pink',
+      incenseId: 'traditional'
+    }
   },
   {
     id: 'golden-marigold',
@@ -89,7 +461,14 @@ export const KRATHONG_STYLES: KrathongStyle[] = [
     baseColor: '#14532d',
     centerColor: '#fbbf24',
     candleColor: '#eab308',
-    auraColor: 'rgba(245, 158, 11, 0.5)'
+    auraColor: 'rgba(245, 158, 11, 0.5)',
+    defaultComponents: {
+      baseId: 'golden-royal',
+      petalId: 'yellow-marigold',
+      centerFlowerId: 'marigold-bed',
+      candleId: 'amber',
+      incenseId: 'traditional'
+    }
   },
   {
     id: 'eco-bread',
@@ -102,7 +481,14 @@ export const KRATHONG_STYLES: KrathongStyle[] = [
     baseColor: '#b45309',
     centerColor: '#fef08a',
     candleColor: '#f59e0b',
-    auraColor: 'rgba(217, 119, 6, 0.4)'
+    auraColor: 'rgba(217, 119, 6, 0.4)',
+    defaultComponents: {
+      baseId: 'eco-bread',
+      petalId: 'yellow-marigold',
+      centerFlowerId: 'sunflower-bed',
+      candleId: 'amber',
+      incenseId: 'led-flame'
+    }
   },
   {
     id: 'coconut-shell',
@@ -115,7 +501,14 @@ export const KRATHONG_STYLES: KrathongStyle[] = [
     baseColor: '#451a03',
     centerColor: '#fde047',
     candleColor: '#f97316',
-    auraColor: 'rgba(249, 115, 22, 0.45)'
+    auraColor: 'rgba(249, 115, 22, 0.45)',
+    defaultComponents: {
+      baseId: 'coconut-shell',
+      petalId: 'banana-fold',
+      centerFlowerId: 'marigold-bed',
+      candleId: 'amber',
+      incenseId: 'traditional'
+    }
   },
   {
     id: 'floral-ice',
@@ -128,7 +521,14 @@ export const KRATHONG_STYLES: KrathongStyle[] = [
     baseColor: '#0284c7',
     centerColor: '#e0f2fe',
     candleColor: '#38bdf8',
-    auraColor: 'rgba(56, 189, 248, 0.45)'
+    auraColor: 'rgba(56, 189, 248, 0.45)',
+    defaultComponents: {
+      baseId: 'crystal-ice',
+      petalId: 'cyan-crystal',
+      centerFlowerId: 'jasmine-crown',
+      candleId: 'cyan',
+      incenseId: 'led-flame'
+    }
   },
   {
     id: 'royal-purple-orchid',
@@ -141,14 +541,21 @@ export const KRATHONG_STYLES: KrathongStyle[] = [
     baseColor: '#15803d',
     centerColor: '#e9d5ff',
     candleColor: '#c084fc',
-    auraColor: 'rgba(168, 85, 247, 0.45)'
+    auraColor: 'rgba(168, 85, 247, 0.45)',
+    defaultComponents: {
+      baseId: 'banana-trunk',
+      petalId: 'purple-orchid',
+      centerFlowerId: 'purple-orchid-bed',
+      candleId: 'purple',
+      incenseId: 'incense-wood'
+    }
   }
 ];
 
 export const KRATHONG_DECORATIONS: KrathongDecoration[] = [
   {
     id: 'incense-candle',
-    name: 'ธูป ๓ ดอก & เทียนประทีป',
+    name: 'ธูป & เทียนประทีปนำทาง',
     description: 'จุดบูชาพระรัตนตรัย ส่องแสงสว่างนำทางชีวิต',
     icon: '🕯️'
   },
@@ -175,6 +582,18 @@ export const KRATHONG_DECORATIONS: KrathongDecoration[] = [
     name: 'หมากพลูคำมงคลโบราณ',
     description: 'เครื่องบูชาพระแม่คงคาตามคติความเชื่อดั้งเดิม',
     icon: '🌿'
+  },
+  {
+    id: 'puffed-rice',
+    name: 'ข้าวตอกดอกไม้โปรยทาน',
+    description: 'สัญลักษณ์แห่งความเจริญงอกงาม ผลิดอกออกผลในชีวิต',
+    icon: '🌾'
+  },
+  {
+    id: 'sacred-thread',
+    name: 'สายสิญจน์มงคล ๙ เส้น',
+    description: 'ผูกโยงสิริมงคล แคล้วคลาดจากสิ่งอัปมงคลทั้งปวง',
+    icon: '🧵'
   }
 ];
 
