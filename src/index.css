@@ -614,6 +614,92 @@
   animation: ripplePulse 2.8s ease-out infinite;
 }
 
+/* River Waves & Water Currents */
+@keyframes riverWavesMove {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.anim-river-waves-1 {
+  animation: riverWavesMove 18s linear infinite;
+}
+
+.anim-river-waves-2 {
+  animation: riverWavesMove 26s linear infinite reverse;
+}
+
+/* Water Ripple Burst when User clicks river */
+@keyframes waterRippleBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.9;
+    border-width: 3px;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+.anim-water-click-ripple {
+  animation: waterRippleBurst 1.2s cubic-bezier(0.1, 0.7, 0.3, 1) forwards;
+}
+
+/* Krathong Launching Into Water (Transition Screen) */
+@keyframes krathongLaunchToWater {
+  0% {
+    transform: translateY(40px) scale(1.3);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(15px) scale(1.22);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(0px) scale(1.15) rotate(1deg);
+  }
+  80% {
+    transform: translateY(-8px) scale(1.1) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(-16px) scale(1.05) rotate(0.5deg);
+    opacity: 0.95;
+  }
+}
+
+.anim-krathong-launch {
+  animation: krathongLaunchToWater 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Water trail wake behind moving krathong */
+@keyframes trailingWakePulse {
+  0% {
+    transform: scale(0.6) translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1) translateY(4px);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.5) translateY(8px);
+    opacity: 0;
+  }
+}
+
+.anim-trailing-wake {
+  animation: trailingWakePulse 2.2s ease-out infinite;
+}
+
+
 
 
 

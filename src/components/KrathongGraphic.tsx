@@ -31,12 +31,16 @@ export const KrathongGraphic: React.FC<KrathongGraphicProps> = ({
 
   return (
     <div className={`relative flex items-center justify-center select-none ${sizeMap[size]} ${className}`}>
-      {/* Water reflection glow underneath */}
+      {/* Water reflection glow & trailing water wake underneath */}
       {showReflections && (
-        <div
-          className="absolute -bottom-3 w-4/5 h-6 rounded-full blur-md opacity-70 pointer-events-none transition-all duration-500"
-          style={{ background: style.auraColor }}
-        />
+        <>
+          <div
+            className="absolute -bottom-3 w-4/5 h-6 rounded-full blur-md opacity-70 pointer-events-none transition-all duration-500"
+            style={{ background: style.auraColor }}
+          />
+          {/* Subtle trailing water ripple wake as it floats on river */}
+          <div className="absolute -bottom-2 -left-2 w-[110%] h-6 rounded-full border border-cyan-300/30 anim-trailing-wake pointer-events-none" />
+        </>
       )}
 
       {/* SVG Krathong Artwork */}

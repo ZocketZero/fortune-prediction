@@ -30,6 +30,19 @@ import confetti from 'canvas-confetti';
 
 const STORAGE_KEY = 'gypsy_loy_krathong_saved';
 
+interface KrathongPhysics {
+  id: string;
+  xPercent: number;
+  yPercent: number;
+  scale: number;
+  speedX: number;     // % of river width per second
+  waveFreq: number;   // water wave frequency
+  waveAmp: number;    // vertical wave bobbing (px)
+  tiltAmp: number;    // rotational tilt (deg)
+  phase: number;      // initial wave phase
+  nudgeY: number;     // reactive nudge from ripple clicks
+}
+
 export const LoyKrathongPage: React.FC = () => {
   // Navigation & View Modes
   const [viewMode, setViewMode] = useState<'builder' | 'floating' | 'river'>('builder');
@@ -51,6 +64,98 @@ export const LoyKrathongPage: React.FC = () => {
   const [riverKrathongs, setRiverKrathongs] = useState<RiverKrathong[]>(INITIAL_RIVER_KRATHONGS);
   const [myKrathong, setMyKrathong] = useState<RiverKrathong | null>(null);
   const [inspectedKrathong, setInspectedKrathong] = useState<RiverKrathong | null>(null);
+  const [clickRipples, setClickRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
+
+  // River Animation & Physics Refs
+  const riverContainerRef = useRef<HTMLDivElement | null>(null);
+  const krathongElsRef = useRef<Map<string, HTMLDivElement>>(new Map());
+  const physicsRef = useRef<Map<string, KrathongPhysics>>(new Map());
+  const hoveredIdRef = useRef<string | null>(null);
+  const inspectedIdRef = useRef<string | null>(null);
+
+  // Sync inspectedIdRef
+  useEffect(() => {
+    inspectedIdRef.current = inspectedKrathong?.id || null;
+  }, [inspectedKrathong]);
+
+  // Synchronize Physics state with River Krathongs
+  useEffect(() => {
+    riverKrathongs.forEach((k) => {
+      if (!physicsRef.current.has(k.id)) {
+        // Perspective speed: foreground (larger scale & higher y) drifts slightly faster
+        const perspectiveSpeed = 1.2 + (k.yPercent / 100) * 1.5;
+        physicsRef.current.set(k.id, {
+          id: k.id,
+          xPercent: k.xPercent,
+          yPercent: k.yPercent,
+          scale: k.scale,
+          speedX: perspectiveSpeed,
+          waveFreq: 2.0 + Math.random() * 1.2,
+          waveAmp: 3.5 + k.scale * 3.5,
+          tiltAmp: 1.8 + Math.random() * 1.8,
+          phase: Math.random() * Math.PI * 2,
+          nudgeY: 0
+        });
+      }
+    });
+  }, [riverKrathongs]);
+
+  // 60FPS Fluid River Movement Animation Loop (Runs on GPU via transform)
+  useEffect(() => {
+    if (viewMode !== 'river') return;
+
+    let animId: number;
+    let lastTime = performance.now();
+
+    const loop = (currentTime: number) => {
+      const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
+      lastTime = currentTime;
+
+      const container = riverContainerRef.current;
+      if (container) {
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        const timeSec = currentTime / 1000;
+
+        physicsRef.current.forEach((phys) => {
+          const isHovered = hoveredIdRef.current === phys.id;
+          const isInspected = inspectedIdRef.current === phys.id;
+          // When inspected, freeze position; when hovered, slow to 25% for easy clicking
+          const speedMultiplier = isInspected ? 0 : isHovered ? 0.25 : 1.0;
+
+          // Horizontal drift along river current
+          phys.xPercent += phys.speedX * dt * speedMultiplier;
+          if (phys.xPercent > 112) {
+            phys.xPercent = -12; // Seamless wrap around river screen
+          }
+
+          // Sinusoidal wave bobbing & tilt
+          const waveY = Math.sin(timeSec * phys.waveFreq + phys.phase) * phys.waveAmp;
+          const rot = Math.cos(timeSec * (phys.waveFreq * 0.85) + phys.phase) * phys.tiltAmp;
+
+          // Spring damping decay for ripple nudge
+          if (Math.abs(phys.nudgeY) > 0.05) {
+            phys.nudgeY *= 0.93;
+          } else {
+            phys.nudgeY = 0;
+          }
+
+          const totalWaveY = waveY + phys.nudgeY;
+          const el = krathongElsRef.current.get(phys.id);
+          if (el) {
+            const posX = (phys.xPercent / 100) * width;
+            const posY = (phys.yPercent / 100) * height + totalWaveY;
+            el.style.transform = `translate3d(${posX}px, ${posY}px, 0) translate(-50%, -50%) scale(${phys.scale}) rotate(${rot}deg)`;
+          }
+        });
+      }
+
+      animId = requestAnimationFrame(loop);
+    };
+
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
+  }, [viewMode]);
 
   // Sky Lanterns & Fireworks
   const [skyLanterns, setSkyLanterns] = useState<Array<{ id: number; left: number; bottom: number; size: number }>>([
@@ -295,6 +400,41 @@ export const LoyKrathongPage: React.FC = () => {
     });
   };
 
+  // Interactive River Water Click: Spawns ripples and physically nudges nearby krathongs
+  const handleRiverClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Avoid triggering when clicking buttons inside HUD or modals
+    if ((e.target as HTMLElement).closest('button')) return;
+    if (!riverContainerRef.current) return;
+
+    const rect = riverContainerRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    // Spawn animated ripple ring
+    const rippleId = Date.now();
+    setClickRipples((prev) => [...prev.slice(-3), { id: rippleId, x: clickX, y: clickY }]);
+    setTimeout(() => {
+      setClickRipples((prev) => prev.filter((r) => r.id !== rippleId));
+    }, 1200);
+
+    // Play gentle splash sound
+    playSoundEffect('splash');
+
+    // Nudge krathongs located within ripple radius
+    const containerWidth = rect.width;
+    const containerHeight = rect.height;
+    physicsRef.current.forEach((phys) => {
+      const kX = (phys.xPercent / 100) * containerWidth;
+      const kY = (phys.yPercent / 100) * containerHeight;
+      const dist = Math.hypot(clickX - kX, clickY - kY);
+      if (dist < 220) {
+        // Upward impulse proportional to distance
+        const impulse = (1 - dist / 220) * -16;
+        phys.nudgeY = impulse;
+      }
+    });
+  };
+
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     setCopiedText(label);
@@ -380,9 +520,9 @@ export const LoyKrathongPage: React.FC = () => {
           {/* Animated Water Background */}
           <div className="absolute inset-0 bg-gradient-to-t from-cyan-950/60 via-transparent to-black/40 pointer-events-none"></div>
 
-          {/* Floating Krathong Ceremony Graphic */}
+          {/* Floating Krathong Ceremony Graphic with Launch Animation */}
           <div className="relative z-10 flex flex-col items-center gap-5">
-            <div className="relative transform transition-all duration-1000 translate-y-3 scale-110">
+            <div className="relative transform anim-krathong-launch">
               <div className="absolute -inset-8 bg-amber-400/20 rounded-full blur-2xl animate-pulse"></div>
               <KrathongGraphic
                 style={selectedStyle}
@@ -390,6 +530,8 @@ export const LoyKrathongPage: React.FC = () => {
                 size="xl"
                 showReflections={true}
               />
+              {/* Expanding Water Ripple Ring as it enters water */}
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-48 h-10 rounded-full border border-cyan-400/50 anim-ripple pointer-events-none"></div>
             </div>
 
             <div className="space-y-2 mt-4 max-w-md">
@@ -412,11 +554,16 @@ export const LoyKrathongPage: React.FC = () => {
         </div>
       )}
 
-      {/* Mode 2: River View (Active River with Floating Krathongs) */}
+      {/* Mode 2: River View (Active River with Floating & Drifting Krathongs) */}
       {viewMode === 'river' && (
         <div className="space-y-6">
-          {/* River Canvas Container */}
-          <div className="relative rounded-3xl overflow-hidden border border-cyan-500/40 shadow-2xl min-h-[520px] sm:min-h-[580px] water-flowing-bg select-none">
+          {/* River Canvas Container (Clickable for Interactive Ripples) */}
+          <div
+            ref={riverContainerRef}
+            onClick={handleRiverClick}
+            className="relative rounded-3xl overflow-hidden border border-cyan-500/40 shadow-2xl min-h-[520px] sm:min-h-[600px] water-flowing-bg select-none cursor-crosshair"
+            title="แตะหรือคลิกที่ผิวน้ำเพื่อสร้างระลอกคลื่นกระทบกระทง"
+          >
             {/* River Sky with Full Moon & Stars */}
             <div className="absolute top-0 inset-x-0 h-44 bg-gradient-to-b from-[#020617] via-[#040e24] to-transparent pointer-events-none z-0">
               {/* Stars */}
@@ -455,11 +602,61 @@ export const LoyKrathongPage: React.FC = () => {
               </div>
             ))}
 
+            {/* Animated Flowing River Waves (Water Current Streams) */}
+            <div className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none overflow-hidden opacity-30 z-10">
+              <svg
+                className="w-[200%] h-full anim-river-waves-1 absolute bottom-0 left-0"
+                viewBox="0 0 1600 300"
+                preserveAspectRatio="none"
+              >
+                <defs>
+                  <linearGradient id="riverWaveGrad1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="#0369a1" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M0 140 C300 180, 500 100, 800 140 C1100 180, 1300 100, 1600 140 L1600 300 L0 300 Z"
+                  fill="url(#riverWaveGrad1)"
+                />
+              </svg>
+              <svg
+                className="w-[200%] h-full anim-river-waves-2 absolute bottom-0 left-0 opacity-40"
+                viewBox="0 0 1600 300"
+                preserveAspectRatio="none"
+              >
+                <defs>
+                  <linearGradient id="riverWaveGrad2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#083344" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M0 190 C350 150, 600 230, 950 180 C1300 130, 1550 220, 1800 180 L1800 300 L0 300 Z"
+                  fill="url(#riverWaveGrad2)"
+                />
+              </svg>
+            </div>
+
+            {/* Interactive Touch/Click Ripples on Water Surface */}
+            {clickRipples.map((r) => (
+              <div
+                key={r.id}
+                className="absolute pointer-events-none rounded-full border-2 border-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.7)] anim-water-click-ripple z-15"
+                style={{
+                  left: `${r.x}px`,
+                  top: `${r.y}px`,
+                  width: '120px',
+                  height: '55px'
+                }}
+              />
+            ))}
+
             {/* River Wave Current Overlays */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(14,165,233,0.15),_transparent_70%)] pointer-events-none"></div>
             <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
 
-            {/* Floating River Krathongs */}
+            {/* Floating & Moving River Krathongs */}
             <div className="absolute inset-0 z-20 overflow-hidden">
               {riverKrathongs.map((k) => {
                 const kStyle =
@@ -469,12 +666,23 @@ export const LoyKrathongPage: React.FC = () => {
                 return (
                   <div
                     key={k.id}
-                    onClick={() => setInspectedKrathong(k)}
-                    className="absolute cursor-pointer group transition-transform duration-300 hover:scale-110 focus:outline-none"
+                    ref={(el) => {
+                      if (el) krathongElsRef.current.set(k.id, el);
+                      else krathongElsRef.current.delete(k.id);
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInspectedKrathong(k);
+                    }}
+                    onMouseEnter={() => {
+                      hoveredIdRef.current = k.id;
+                    }}
+                    onMouseLeave={() => {
+                      if (hoveredIdRef.current === k.id) hoveredIdRef.current = null;
+                    }}
+                    className="absolute top-0 left-0 cursor-pointer group will-change-transform focus:outline-none select-none"
                     style={{
-                      left: `${k.xPercent}%`,
-                      top: `${k.yPercent}%`,
-                      transform: `translate(-50%, -50%) scale(${k.scale})`
+                      transform: `translate3d(${(k.xPercent / 100) * 800}px, ${(k.yPercent / 100) * 500}px, 0) translate(-50%, -50%) scale(${k.scale})`
                     }}
                     role="button"
                     tabIndex={0}
@@ -485,11 +693,8 @@ export const LoyKrathongPage: React.FC = () => {
                       <div className="absolute -inset-4 rounded-full bg-amber-400/30 blur-xl animate-pulse pointer-events-none"></div>
                     )}
 
-                    {/* Bobbing Graphic */}
-                    <div
-                      className="anim-krathong-bob"
-                      style={{ animationDuration: `${k.speedSeconds}s` }}
-                    >
+                    {/* Krathong Visual Graphic with Trailing Wake */}
+                    <div className="transition-transform duration-300 group-hover:scale-110">
                       <KrathongGraphic
                         style={kStyle}
                         decorations={k.decorations}
@@ -550,8 +755,10 @@ export const LoyKrathongPage: React.FC = () => {
             </div>
           </div>
 
-          <p className="text-center text-xs text-slate-400">
-            💡 คลิกที่กระทงแต่ละลำในแม่น้ำ เพื่ออ่านคำอธิษฐานและร่วมอนุโมทนาพร
+          <p className="text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+            <span>💡 คลิกหรือแตะที่ผิวน้ำ เพื่อสร้างระลอกคลื่นกระทบกระทง</span>
+            <span>•</span>
+            <span>คลิกที่กระทงเพื่ออ่านคำอธิษฐาน</span>
           </p>
         </div>
       )}
