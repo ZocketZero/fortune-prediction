@@ -12,6 +12,7 @@ const GodBlessingPage = lazy(() => import('./components/GodBlessingPage').then(m
 const EncyclopediaPage = lazy(() => import('./components/EncyclopediaPage').then(m => ({ default: m.EncyclopediaPage })));
 const BirthFortunePage = lazy(() => import('./components/BirthFortunePage').then(m => ({ default: m.BirthFortunePage })));
 const BloodFortunePage = lazy(() => import('./components/BloodFortunePage').then(m => ({ default: m.BloodFortunePage })));
+const LoyKrathongPage = lazy(() => import('./components/LoyKrathongPage').then(m => ({ default: m.LoyKrathongPage })));
 
 export type AppTab =
   | 'home'
@@ -20,6 +21,7 @@ export type AppTab =
   | 'blood_fortune'
   | 'omikuji'
   | 'thai_siamsi'
+  | 'loy_krathong'
   | 'thai_blessing'
   | 'japan_blessing'
   | 'god_blessing'
@@ -39,6 +41,10 @@ export const App: React.FC = () => {
       hash === 'omikuji' ||
       hash === 'thai_siamsi' ||
       hash === 'thai-siamsi' ||
+      hash === 'loy_krathong' ||
+      hash === 'loy-krathong' ||
+      hash === 'loykrathong' ||
+      hash === 'krathong' ||
       hash === 'thai_blessing' ||
       hash === 'thai-blessing' ||
       hash === 'japan_blessing' ||
@@ -50,6 +56,7 @@ export const App: React.FC = () => {
       if (hash === 'birth-fortune') return 'birth_fortune';
       if (hash === 'blood-fortune' || hash === 'blood') return 'blood_fortune';
       if (hash === 'thai-siamsi') return 'thai_siamsi';
+      if (hash === 'loy-krathong' || hash === 'loykrathong' || hash === 'krathong') return 'loy_krathong';
       if (hash === 'thai-blessing') return 'thai_blessing';
       if (hash === 'japan-blessing') return 'japan_blessing';
       if (hash === 'god-blessing') return 'god_blessing';
@@ -123,6 +130,7 @@ export const App: React.FC = () => {
                 <option value="blood_fortune">🩸 ทำนายตามกรุ๊ปเลือด</option>
                 <option value="omikuji">⛩️ เซียมซีญี่ปุ่น (おみくじ)</option>
                 <option value="thai_siamsi">📜 เซียมซีไทย ๒๘ ใบ</option>
+                <option value="loy_krathong">🌕 ลอยกระทงออนไลน์ (Loy Krathong)</option>
                 <option value="thai_blessing">🔥 ขอพรเทพเจ้าไทย</option>
                 <option value="japan_blessing">🏛️ ขอพรเทพเจ้าญี่ปุ่น (絵馬)</option>
                 <option value="god_blessing">✝️ ขอพรพระเจ้า (Prayer)</option>
@@ -146,6 +154,7 @@ export const App: React.FC = () => {
           {activeTab === 'blood_fortune' && <BloodFortunePage />}
           {activeTab === 'omikuji' && <OmikujiPage />}
           {activeTab === 'thai_siamsi' && <ThaiSiamsiPage />}
+          {activeTab === 'loy_krathong' && <LoyKrathongPage />}
           {activeTab === 'thai_blessing' && <ThaiBlessingPage />}
           {activeTab === 'japan_blessing' && <JapanBlessingPage />}
           {activeTab === 'god_blessing' && <GodBlessingPage />}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Scroll, BookOpen, ArrowRight, Flame, Landmark, Calendar } from 'lucide-react';
+import { Compass, Scroll, BookOpen, ArrowRight, Flame, Landmark, Calendar, Waves } from 'lucide-react';
 import type { AppTab } from '../App';
 
 interface MainPageProps {
@@ -46,6 +46,14 @@ const CARDS = [
     desc: 'เสี่ยงทายเซียมซีโบราณ พร้อมบทกลอนและคำทำนาย',
     accent: 'border-yellow-500/40 hover:border-yellow-400/70',
     iconColor: 'text-yellow-400',
+  },
+  {
+    id: 'loy_krathong' as const,
+    icon: <Waves className="w-5 h-5" />,
+    title: 'ลอยกระทงออนไลน์',
+    desc: 'ขอขมาพระแม่คงคา ลอยเคราะห์ ปล่อยโคม และอธิษฐานพรใต้แสงจันทร์วันเพ็ญ',
+    accent: 'border-cyan-500/40 hover:border-cyan-400/70',
+    iconColor: 'text-cyan-400',
   },
   {
     id: 'thai_blessing' as const,

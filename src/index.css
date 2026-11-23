@@ -475,6 +475,146 @@
   animation: divineShimmerSweep 4.5s ease-in-out infinite;
 }
 
+/* Loy Krathong Special Effects */
+@keyframes candleFlicker {
+  0%, 100% {
+    transform: scale(1) translateY(0) rotate(-1deg);
+    opacity: 0.95;
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.5));
+  }
+  25% {
+    transform: scale(1.08, 0.95) translateY(-1px) rotate(2deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(245, 158, 11, 1)) drop-shadow(0 0 25px rgba(249, 115, 22, 0.6));
+  }
+  50% {
+    transform: scale(0.96, 1.05) translateY(-2px) rotate(-1.5deg);
+    opacity: 0.9;
+    filter: drop-shadow(0 0 9px rgba(245, 158, 11, 0.85)) drop-shadow(0 0 18px rgba(239, 68, 68, 0.45));
+  }
+  75% {
+    transform: scale(1.04, 0.98) translateY(0) rotate(1deg);
+    opacity: 0.98;
+    filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.95)) drop-shadow(0 0 22px rgba(249, 115, 22, 0.55));
+  }
+}
+
+.anim-candle-flame {
+  animation: candleFlicker 1.8s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes krathongBobbing {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-7px) rotate(1.2deg);
+  }
+  65% {
+    transform: translateY(5px) rotate(-1.5deg);
+  }
+  85% {
+    transform: translateY(-2px) rotate(0.6deg);
+  }
+}
+
+.anim-krathong-bob {
+  animation: krathongBobbing 4.5s ease-in-out infinite;
+}
+
+@keyframes waterCurrent {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.water-flowing-bg {
+  background: linear-gradient(
+    180deg,
+    #050813 0%,
+    #071326 25%,
+    #0a223f 50%,
+    #0c2d52 75%,
+    #081b33 100%
+  );
+}
+
+@keyframes waterGleam {
+  0% {
+    opacity: 0.2;
+    transform: translateX(-10%) scaleY(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(10%) scaleY(1.3);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translateX(-10%) scaleY(1);
+  }
+}
+
+.anim-water-gleam {
+  animation: waterGleam 6s ease-in-out infinite;
+}
+
+@keyframes skyLanternFloat {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.9);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.95;
+  }
+  75% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-240px) translateX(35px) scale(0.6);
+    opacity: 0;
+  }
+}
+
+.anim-sky-lantern {
+  animation: skyLanternFloat 9s ease-in-out infinite;
+}
+
+@keyframes moonHaloGlow {
+  0%, 100% {
+    box-shadow: 0 0 45px rgba(254, 240, 138, 0.45), 0 0 100px rgba(253, 224, 71, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 65px rgba(254, 240, 138, 0.65), 0 0 140px rgba(253, 224, 71, 0.35);
+  }
+}
+
+.anim-moon-halo {
+  animation: moonHaloGlow 5s ease-in-out infinite;
+}
+
+@keyframes ripplePulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.anim-ripple {
+  animation: ripplePulse 2.8s ease-out infinite;
+}
+
+
 
 
 
