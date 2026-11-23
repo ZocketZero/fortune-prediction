@@ -83,12 +83,18 @@ export const LoyKrathongPage: React.FC = () => {
   const [inspectedKrathong, setInspectedKrathong] = useState<RiverKrathong | null>(null);
   const [clickRipples, setClickRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
 
-  // River Animation & Physics Refs
+  // River Animation, Dragging & Physics Refs
   const riverContainerRef = useRef<HTMLDivElement | null>(null);
   const krathongElsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const physicsRef = useRef<Map<string, KrathongPhysics>>(new Map());
   const hoveredIdRef = useRef<string | null>(null);
   const inspectedIdRef = useRef<string | null>(null);
+  const draggingIdRef = useRef<string | null>(null);
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
+  const dragMovedRef = useRef<boolean>(false);
+
+  const [activeDraggingId, setActiveDraggingId] = useState<string | null>(null);
+  const [showMoveControls, setShowMoveControls] = useState<boolean>(true);
 
   // Sync inspectedIdRef
   useEffect(() => {
@@ -135,6 +141,11 @@ export const LoyKrathongPage: React.FC = () => {
         const timeSec = currentTime / 1000;
 
         physicsRef.current.forEach((phys) => {
+          // If being dragged by pointer, position is controlled by dragMove!
+          if (draggingIdRef.current === phys.id) {
+            return;
+          }
+
           const isHovered = hoveredIdRef.current === phys.id;
           const isInspected = inspectedIdRef.current === phys.id;
           // When inspected, freeze position; when hovered, slow to 25% for easy clicking
@@ -507,6 +518,161 @@ export const LoyKrathongPage: React.FC = () => {
     });
   };
 
+  // Double Click / Tap on River: Directs User's Krathong to glide to that position
+  const handleRiverDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+    if (!riverContainerRef.current) return;
+
+    const targetId = myKrathong?.id || riverKrathongs[0]?.id;
+    if (!targetId) return;
+
+    const rect = riverContainerRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    const xPercent = Math.max(5, Math.min(95, (clickX / rect.width) * 100));
+    const yPercent = Math.max(28, Math.min(88, (clickY / rect.height) * 100));
+
+    const phys = physicsRef.current.get(targetId);
+    if (phys) {
+      phys.xPercent = xPercent;
+      phys.yPercent = yPercent;
+      phys.scale = 0.8 + (yPercent / 100) * 0.55;
+      phys.nudgeY = -14;
+      playSoundEffect('splash');
+      triggerLightBurst({
+        particleCount: 30,
+        spread: 50,
+        origin: { x: clickX / rect.width, y: clickY / rect.height }
+      });
+    }
+  };
+
+  // Pointer Down on Krathong (Initiate Drag or Prepare for Click)
+  const handleKrathongPointerDown = (
+    e: React.PointerEvent<HTMLDivElement>,
+    krathongId: string
+  ) => {
+    e.stopPropagation();
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // Ignored if capture unsupported
+    }
+
+    draggingIdRef.current = krathongId;
+    setActiveDraggingId(krathongId);
+    dragStartPosRef.current = { x: e.clientX, y: e.clientY };
+    dragMovedRef.current = false;
+  };
+
+  // Pointer Move (Smoothly move Krathong across the water surface)
+  const handleKrathongPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingIdRef.current || !riverContainerRef.current) return;
+
+    const start = dragStartPosRef.current;
+    if (start) {
+      const dist = Math.hypot(e.clientX - start.x, e.clientY - start.y);
+      if (dist > 5) {
+        dragMovedRef.current = true;
+      }
+    }
+
+    if (!dragMovedRef.current) return;
+
+    const rect = riverContainerRef.current.getBoundingClientRect();
+    const curX = e.clientX - rect.left;
+    const curY = e.clientY - rect.top;
+
+    // Constrain within river water bounds
+    const xPercent = Math.max(2, Math.min(98, (curX / rect.width) * 100));
+    const yPercent = Math.max(28, Math.min(88, (curY / rect.height) * 100));
+
+    const phys = physicsRef.current.get(draggingIdRef.current);
+    if (phys) {
+      phys.xPercent = xPercent;
+      phys.yPercent = yPercent;
+      // Perspective scale adjusts dynamically as user moves krathong up or down
+      phys.scale = 0.8 + (yPercent / 100) * 0.55;
+
+      const el = krathongElsRef.current.get(phys.id);
+      if (el) {
+        const tilt = Math.max(-12, Math.min(12, (e.movementX || 0) * 1.5));
+        el.style.transform = `translate3d(${curX}px, ${curY}px, 0) translate(-50%, -50%) scale(${phys.scale * 1.15}) rotate(${tilt}deg)`;
+      }
+    }
+  };
+
+  // Pointer Up on Krathong (Release to water or trigger Click to inspect)
+  const handleKrathongPointerUp = (
+    e: React.PointerEvent<HTMLDivElement>,
+    targetK: RiverKrathong
+  ) => {
+    e.stopPropagation();
+    const wasDragging = draggingIdRef.current === targetK.id;
+    const wasMoved = dragMovedRef.current;
+
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      // Ignored
+    }
+
+    draggingIdRef.current = null;
+    setActiveDraggingId(null);
+    dragStartPosRef.current = null;
+    dragMovedRef.current = false;
+
+    if (wasDragging && wasMoved) {
+      // Released onto river water!
+      playSoundEffect('splash');
+
+      // Spawn splash ripple at drop location
+      if (riverContainerRef.current) {
+        const rect = riverContainerRef.current.getBoundingClientRect();
+        const dropX = e.clientX - rect.left;
+        const dropY = e.clientY - rect.top;
+        const rippleId = Date.now();
+        setClickRipples((prev) => [...prev.slice(-3), { id: rippleId, x: dropX, y: dropY }]);
+        setTimeout(() => setClickRipples((p) => p.filter((r) => r.id !== rippleId)), 1200);
+      }
+    } else if (!wasMoved) {
+      // Simple click: open inspection modal!
+      setInspectedKrathong(targetK);
+    }
+  };
+
+  // Manual Steer Buttons for User's Krathong
+  const handleMoveMyKrathong = (dir: 'left' | 'right' | 'up' | 'down' | 'boost') => {
+    const targetId = myKrathong?.id || riverKrathongs[0]?.id;
+    if (!targetId) return;
+
+    const phys = physicsRef.current.get(targetId);
+    if (!phys) return;
+
+    playSoundEffect('splash');
+
+    if (dir === 'left') {
+      phys.xPercent = Math.max(5, phys.xPercent - 8);
+      phys.tiltAmp = 4;
+    } else if (dir === 'right') {
+      phys.xPercent = Math.min(95, phys.xPercent + 8);
+      phys.tiltAmp = 4;
+    } else if (dir === 'up') {
+      phys.yPercent = Math.max(30, phys.yPercent - 8);
+      phys.scale = 0.8 + (phys.yPercent / 100) * 0.55;
+      phys.nudgeY = -12;
+    } else if (dir === 'down') {
+      phys.yPercent = Math.min(85, phys.yPercent + 8);
+      phys.scale = 0.8 + (phys.yPercent / 100) * 0.55;
+      phys.nudgeY = 12;
+    } else if (dir === 'boost') {
+      phys.speedX = Math.min(6, phys.speedX + 1.2);
+      phys.nudgeY = -8;
+      triggerLightBurst({ particleCount: 25, spread: 45 });
+    }
+  };
+
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     setCopiedText(label);
@@ -630,12 +796,13 @@ export const LoyKrathongPage: React.FC = () => {
       {/* Mode 2: River View (Active River with Floating & Drifting Krathongs) */}
       {viewMode === 'river' && (
         <div className="space-y-6">
-          {/* River Canvas Container (Clickable for Interactive Ripples) */}
+          {/* River Canvas Container (Clickable for Interactive Ripples, Draggable & Double-Clickable) */}
           <div
             ref={riverContainerRef}
             onClick={handleRiverClick}
+            onDoubleClick={handleRiverDoubleClick}
             className="relative rounded-3xl overflow-hidden border border-cyan-500/40 shadow-2xl min-h-[520px] sm:min-h-[600px] water-flowing-bg select-none cursor-crosshair"
-            title="แตะหรือคลิกที่ผิวน้ำเพื่อสร้างระลอกคลื่นกระทบกระทง"
+            title="คลิกลากกระทงเพื่อย้ายตำแหน่ง หรือดับเบิ้ลคลิกบนผิวน้ำเพื่อเรียกกระทงมา"
           >
             {/* River Sky with Full Moon & Stars */}
             <div className="absolute top-0 inset-x-0 h-44 bg-gradient-to-b from-[#020617] via-[#040e24] to-transparent pointer-events-none z-0">
@@ -674,6 +841,69 @@ export const LoyKrathongPage: React.FC = () => {
                 </div>
               </div>
             ))}
+
+            {/* Interactive Krathong Move & Steer Toolbar (Top Left) */}
+            {showMoveControls && (
+              <div className="absolute top-3 left-3 z-30 flex flex-col gap-1.5 p-2 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-cyan-500/40 shadow-2xl animate-fade-in">
+                <div className="flex items-center justify-between gap-2 px-1">
+                  <span className="text-[10px] font-bold text-cyan-300 flex items-center gap-1">
+                    <span>🕹️ เลื่อนกระทง</span>
+                  </span>
+                  <span className="text-[9px] text-amber-300 bg-amber-950/80 px-1.5 py-0.2 rounded-full border border-amber-500/30">
+                    ลากหรือกดเลื่อน
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-1 w-28 mx-auto">
+                  <div></div>
+                  <button
+                    type="button"
+                    onClick={() => handleMoveMyKrathong('up')}
+                    className="p-1.5 rounded-xl bg-slate-900 hover:bg-cyan-900/60 border border-slate-700 hover:border-cyan-400 text-cyan-200 text-xs font-bold transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow"
+                    title="ลอยขึ้นไปทางไกล (Up)"
+                  >
+                    ▲
+                  </button>
+                  <div></div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleMoveMyKrathong('left')}
+                    className="p-1.5 rounded-xl bg-slate-900 hover:bg-cyan-900/60 border border-slate-700 hover:border-cyan-400 text-cyan-200 text-xs font-bold transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow"
+                    title="ลอยไปทางซ้าย (Left)"
+                  >
+                    ◀
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleMoveMyKrathong('boost')}
+                    className="p-1.5 rounded-xl bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/50 text-amber-300 text-xs font-bold transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow"
+                    title="เร่งความเร็วกระแสน้ำ (Boost)"
+                  >
+                    ⚡
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleMoveMyKrathong('right')}
+                    className="p-1.5 rounded-xl bg-slate-900 hover:bg-cyan-900/60 border border-slate-700 hover:border-cyan-400 text-cyan-200 text-xs font-bold transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow"
+                    title="ลอยไปทางขวา (Right)"
+                  >
+                    ▶
+                  </button>
+
+                  <div></div>
+                  <button
+                    type="button"
+                    onClick={() => handleMoveMyKrathong('down')}
+                    className="p-1.5 rounded-xl bg-slate-900 hover:bg-cyan-900/60 border border-slate-700 hover:border-cyan-400 text-cyan-200 text-xs font-bold transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow"
+                    title="ลอยลงมาใกล้ (Down)"
+                  >
+                    ▼
+                  </button>
+                  <div></div>
+                </div>
+              </div>
+            )}
 
             {/* Animated Flowing River Waves (Water Current Streams) */}
             <div className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none overflow-hidden opacity-30 z-10">
@@ -729,12 +959,13 @@ export const LoyKrathongPage: React.FC = () => {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(14,165,233,0.15),_transparent_70%)] pointer-events-none"></div>
             <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
 
-            {/* Floating & Moving River Krathongs */}
+            {/* Floating & Draggable River Krathongs */}
             <div className="absolute inset-0 z-20 overflow-hidden">
               {riverKrathongs.map((k) => {
                 const kStyle =
                   KRATHONG_STYLES.find((s) => s.id === k.krathongStyleId) || KRATHONG_STYLES[0];
                 const isMine = k.id === myKrathong?.id;
+                const isDragging = activeDraggingId === k.id;
 
                 return (
                   <div
@@ -743,31 +974,47 @@ export const LoyKrathongPage: React.FC = () => {
                       if (el) krathongElsRef.current.set(k.id, el);
                       else krathongElsRef.current.delete(k.id);
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setInspectedKrathong(k);
-                    }}
+                    onPointerDown={(e) => handleKrathongPointerDown(e, k.id)}
+                    onPointerMove={handleKrathongPointerMove}
+                    onPointerUp={(e) => handleKrathongPointerUp(e, k)}
+                    onPointerCancel={(e) => handleKrathongPointerUp(e, k)}
                     onMouseEnter={() => {
                       hoveredIdRef.current = k.id;
                     }}
                     onMouseLeave={() => {
                       if (hoveredIdRef.current === k.id) hoveredIdRef.current = null;
                     }}
-                    className="absolute top-0 left-0 cursor-pointer group will-change-transform focus:outline-none select-none"
+                    className={`absolute top-0 left-0 will-change-transform focus:outline-none select-none touch-none ${
+                      isDragging
+                        ? 'cursor-grabbing z-40'
+                        : 'cursor-grab hover:z-30'
+                    }`}
                     style={{
                       transform: `translate3d(${(k.xPercent / 100) * 800}px, ${(k.yPercent / 100) * 500}px, 0) translate(-50%, -50%) scale(${k.scale})`
                     }}
                     role="button"
                     tabIndex={0}
-                    aria-label={`กระทงของ ${k.senderName}`}
+                    aria-label={`กระทงของ ${k.senderName} (คลิกเพื่อดูคำอธิษฐาน หรือลากเพื่อเคลื่อนย้าย)`}
                   >
                     {/* User's Krathong Glowing Halo */}
                     {isMine && (
                       <div className="absolute -inset-4 rounded-full bg-amber-400/30 blur-xl animate-pulse pointer-events-none"></div>
                     )}
 
+                    {/* Active Dragging Ring Indicator */}
+                    {isDragging && (
+                      <div className="absolute -inset-5 rounded-full border-2 border-dashed border-cyan-300/80 animate-spin pointer-events-none"></div>
+                    )}
+
+                    {/* Drag hint badge on user's krathong */}
+                    {isMine && !isDragging && (
+                      <span className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-950/90 text-cyan-300 border border-cyan-400/50 shadow-md animate-bounce pointer-events-none">
+                        🖐️ ลากย้ายได้
+                      </span>
+                    )}
+
                     {/* Krathong Visual Graphic with Trailing Wake */}
-                    <div className="transition-transform duration-300 group-hover:scale-110">
+                    <div className="transition-transform duration-200 group-hover:scale-105 pointer-events-none">
                       <KrathongGraphic
                         style={kStyle}
                         customComponents={isMine ? customComponents : k.customComponents || kStyle.defaultComponents}
@@ -805,6 +1052,18 @@ export const LoyKrathongPage: React.FC = () => {
                   <Sparkles className="w-3.5 h-3.5 text-purple-400" />
                   <span>🎆 จุดพลุฉลอง</span>
                 </button>
+
+                <button
+                  onClick={() => setShowMoveControls(!showMoveControls)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 ${
+                    showMoveControls
+                      ? 'bg-cyan-600/40 border-cyan-400 text-cyan-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:text-white'
+                  }`}
+                  title="เปิด/ปิด แป้นบังคับกระทง"
+                >
+                  <span>🕹️ {showMoveControls ? 'ซ่อนปุ่มบังคับ' : 'ปุ่มบังคับ'}</span>
+                </button>
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -829,8 +1088,10 @@ export const LoyKrathongPage: React.FC = () => {
             </div>
           </div>
 
-          <p className="text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-            <span>💡 คลิกหรือแตะที่ผิวน้ำ เพื่อสร้างระลอกคลื่นกระทบกระทง</span>
+          <p className="text-center text-xs text-slate-400 flex flex-wrap items-center justify-center gap-2">
+            <span>🖐️ <strong>คลิกและลากกระทง</strong> เพื่อเคลื่อนย้ายตำแหน่งบนผิวน้ำได้อย่างอิสระ</span>
+            <span>•</span>
+            <span>👆 ดับเบิ้ลคลิกบนผิวน้ำเพื่อเรียกกระทงมา</span>
             <span>•</span>
             <span>คลิกที่กระทงเพื่ออ่านคำอธิษฐาน</span>
           </p>
